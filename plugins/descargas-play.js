@@ -45,9 +45,7 @@ const handler = async (m, { conn, text, command }) => {
 
     // Mensaje de info decorado y ordenado
     const infoMessage = 
-`❀ *<${title}>*
-
-> ✧ *Canal :* ${canal}
+`> ✧ *Canal :* ${canal}
 > ✰ *Vistas :* ${formattedViews}
 > ⴵ *Duración :* ${timestamp}
 > ✐ *Publicado :* ${ago}
@@ -63,8 +61,8 @@ const handler = async (m, { conn, text, command }) => {
 
     const contextInfo = {
       externalAdReply: {
-        title: wm,
-        body: '',
+        title: title,
+        body: wm,
         mediaType: 1,
         previewType: 0,
         mediaUrl: url,
