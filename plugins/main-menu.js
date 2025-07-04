@@ -1,17 +1,16 @@
-//Hecho por Ado github.com/Ado-rgb
 import fs from 'fs'
 import path from 'path'
 import { promises as fsPromises } from 'fs'
-import getSubBotConfig from '../lib/getSubBotConfig.js' 
+import getSubBotConfig from '../lib/getSubBotConfig.js'
 
 let handler = async (m, { conn, args }) => {
-  const senderNumber = m.sender.replace(/[^0-9]/g, '')
-  const isSubBot = fs.existsSync(`./JadiBots/${senderNumber}`)
+  const botNumber = conn.user.jid.replace(/[^0-9]/g, '') // ahora se usa el número del bot
+  const isSubBot = fs.existsSync(`./JadiBots/${botNumber}`) // revisa si el BOT es Sub-Bot
   let botname = global.botname
   let banner = global.banner
 
   if (isSubBot) {
-    const config = await getSubBotConfig(senderNumber)
+    const config = await getSubBotConfig(botNumber)
     if (config?.name) botname = config.name
     if (config?.banner) banner = config.banner
   }
@@ -35,6 +34,7 @@ let handler = async (m, { conn, args }) => {
 │ ᰔᩚ Moneda *»* ${global.moneda}
 ╰──────────────────
 ❐ Crea tu Sub-Bot con *#qr* o *#code*
+✧ Y personalizalo con *#setbanner* y *#setname*
 
 • :･ﾟ⊹˚• \`『 Info-Bot 』\` •˚⊹:･ﾟ•
 
@@ -565,27 +565,27 @@ let handler = async (m, { conn, args }) => {
 > ✦ Juega un pvp contra otro usuario.
 ❀ *#ttt*
 > ✦ Crea una sala de juego.
-`.trim()
+`.trim() // corté el mensaje para no repetir el texto completo aquí
 
   await conn.sendMessage(m.chat, {
-  image: { url: banner },
-  caption: txt,
-  contextInfo: {
-    mentionedJid: [m.sender, userId],
-    forwardingScore: 999, // Se ve como reenviado muchas veces
-    isForwarded: true,
-    forwardedNewsletterMessageInfo: {
-      newsletterJid: global.idcanal,
-      newsletterName: global.namecanal,
-      serverMessageId: -1
+    image: { url: banner },
+    caption: txt,
+    contextInfo: {
+      mentionedJid: [m.sender, userId],
+      forwardingScore: 999,
+      isForwarded: true,
+      forwardedNewsletterMessageInfo: {
+        newsletterJid: global.idcanal,
+        newsletterName: global.namecanal,
+        serverMessageId: -1
+      }
     }
-  }
-}, { quoted: m })
+  }, { quoted: m })
 }
 
 handler.help = ['menu']
 handler.tags = ['main']
-handler.command = ['menu', 'menú', 'help']
+handler.command = ['menutest']
 
 export default handler
 
