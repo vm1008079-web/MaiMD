@@ -2,7 +2,7 @@
 import fs from 'fs'
 import path from 'path'
 import { promises as fsPromises } from 'fs'
-import getSubBotConfig from '../lib/getSubBotConfig.js' // tu archivo que ya hiciste
+import getSubBotConfig from '../lib/getSubBotConfig.js' 
 
 let handler = async (m, { conn, args }) => {
   const senderNumber = m.sender.replace(/[^0-9]/g, '')
@@ -38,15 +38,13 @@ let handler = async (m, { conn, args }) => {
 
 • :･ﾟ⊹˚• \`『 Info-Bot 』\` •˚⊹:･ﾟ•
 
-❍ Comandos para ver estado e información de la Bot.
+ Comandos para ver estado e información de la Bot.
 ❀ *#help • #menu*
 > ✦ Ver la lista de comandos de la Bot.
 ❀ *#uptime • #runtime*
 > ✦ Ver tiempo activo o en linea de la Bot.
 ❀ *#sc • #script*
 > ✦ Link del repositorio oficial de la Bot
-❀ *#staff • #colaboradores*
-> ✦ Ver la lista de desarrolladores de la Bot.
 ❀ *#serbot • #serbot code*
 > ✦ Crea una sesión de Sub-Bot.
 ❀ *#bots • #sockets*
