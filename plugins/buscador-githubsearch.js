@@ -1,36 +1,41 @@
-/* Github Search By WillZek 
-- Free Codes Titan  
-- https://whatsapp.com/channel/0029ValMlRS6buMFL9d0iQ0S
-*/
+//Hecho por Ado github.com/Ado-rgb
+import fetch from 'node-fetch'
 
-// 𝗚𝗶𝘁𝗵𝘂𝗯 𝗦𝗲𝗮𝗿𝗰𝗵
+let handler = async (m, { conn, text, usedPrefix, command }) => {
 
-import fetch from 'node-fetch';
-
-let handler = async(m, { conn, text, usedPrefix, command }) => {
-
-if (!text) return conn.reply(m.chat, `${emoji} Por favor ingresa un nombre de un repositorio GitHub.`, m);
+if (!text) return conn.reply(m.chat, `✐ᰔᩚ Por favor ingresa un nombre de un repositorio GitHub.`, m)
 
 try {
-let api = `https://dark-core-api.vercel.app/api/search/github?key=api&text=${text}`;
+let api = `https://dark-core-api.vercel.app/api/search/github?key=api&text=${text}`
+let response = await fetch(api)
+let json = await response.json()
+let result = json.results[0]
 
-let response = await fetch(api);
-let json = await response.json();
-let result = json.results[0];
+let txt = `❐✦ ᰔᩚ *Resultado de búsqueda GitHub*\n\n` +
+`✿ *Nombre:* ${result.name}\n` +
+`❀ *Owner:* ${result.creator}\n` +
+`☁︎ *Estrellas:* ${result.stars}\n` +
+`✎ *Forks:* ${result.forks}\n` +
+`✧ *Descripción:* ${result.description}\n` +
+`✧ *Creado:* ${result.createdAt}\n` +
+`☄︎ *Clonar:* ${result.cloneUrl}`
 
-let txt = `🍬 *Nombre:* ${result.name}\n👑 *Owner:* ${result.creator}\n🌟 *Estrellas:* ${result.stars}\n🔖 *Bifurcaciones:* ${result.forks}\n📜 *Descripcion:* ${result.description}\n📆 *Creado:* ${result.createdAt}\n🔗 *Link:* ${result.cloneUrl}`;
+let img = 'https://raw.githubusercontent.com/The-King-Destroy/Adiciones/main/Contenido/1745610598914.jpeg'
 
-let img = 'https://raw.githubusercontent.com/The-King-Destroy/Adiciones/main/Contenido/1745610598914.jpeg';
-
-conn.sendMessage(m.chat, { image: { url: img }, caption: txt }, { quoted: fkontak });
+conn.sendMessage(m.chat, {
+  image: { url: img },
+  caption: txt
+}, { quoted: fkontak })
 
 } catch (error) {
-console.error(error)
-m.reply(`Error: ${error.message}`);
-m.react('✖️');
- }
-};
+  console.error(error)
+  m.reply(`☄︎ Error al buscar en GitHub: ${error.message}`)
+  m.react('✖️')
+}}
 
-handler.command = ['githubsearch', 'gbsearch'];
+handler.command = ['githubsearch', 'gbsearch']
+handler.help = ['githubsearch <nombre>']
+handler.tags = ['internet']
+handler.register = true
 
-export default handler;
+export default handler
