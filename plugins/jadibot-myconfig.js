@@ -31,7 +31,7 @@ let handler = async (m, { conn }) => {
 
 handler.help = ['myconfig']
 handler.tags = ['serbot']
-handler.command = /^myconfig$/i
+handler.command = ['myconfig']
 handler.owner = false
 
 export default handler
