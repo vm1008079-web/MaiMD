@@ -570,12 +570,19 @@ Crea un *Sub-Bot* con tu número utilizando *#qr* o *#code*
 `.trim()
 
   await conn.sendMessage(m.chat, {
-    image: { url: banner },
-    caption: txt,
-    contextInfo: {
-      mentionedJid: [m.sender, userId]
+  image: { url: banner },
+  caption: txt,
+  contextInfo: {
+    mentionedJid: [m.sender, userId],
+    forwardingScore: 999, // Se ve como reenviado muchas veces
+    isForwarded: true,
+    forwardedNewsletterMessageInfo: {
+      newsletterJid: global.idcanal,
+      newsletterName: global.namecanal,
+      serverMessageId: -1
     }
-  }, { quoted: m })
+  }
+}, { quoted: m })
 }
 
 handler.help = ['menu']
