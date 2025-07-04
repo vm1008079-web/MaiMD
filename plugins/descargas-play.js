@@ -77,7 +77,7 @@ const handler = async (m, { conn, text, command }) => {
     // Enviar audio o video según comando
     if (['play', 'yta', 'ytmp3', 'playaudio'].includes(command)) {
       try {
-        const res = await fetch(`https://api.stellarwa.xyz/dow/ytmp3?url=${url}`)
+        const res = await fetch(`https://theadonix-api.vercel.app/api/ytmp3?url=${url}`)
         const json = await res.json()
         const audioUrl = json?.data?.dl
         const audioTitle = json?.data?.title || title
