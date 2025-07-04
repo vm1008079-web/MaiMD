@@ -21,7 +21,9 @@ const handler = async (m, { conn, text, command }) => {
 
     const video = searchResult.all?.[0] || searchResult.videos?.[0] || searchResult
 
-    if (!video) return conn.reply(m.chat, '*✧ No encontré resultados para esa búsqueda.*', m)
+    if (!video) {
+      return conn.reply(m.chat, '*✧ No encontré resultados para esa búsqueda.*', m)
+    }
 
     const {
       title = 'Desconocido',
@@ -36,14 +38,13 @@ const handler = async (m, { conn, text, command }) => {
     const formattedViews = formatViews(views)
     const canal = author.name || 'Desconocido'
 
-    const infoMessage =
-`✧ Canal: *${canal}*
-✰ Vistas: *${formattedViews}*
-ⴵ Duración: *${timestamp}*
-✐ Publicado: *${ago}*
-☁︎ Link: ${url}`
+    const infoMessage = 
+`> ✧ *Canal :* ${canal}
+> ✰ *Vistas :* ${formattedViews}
+> ⴵ *Duración :* ${timestamp}
+> ✐ *Publicado :* ${ago}
+> ☁︎ *Link :* ${url}`
 
-    // Obtener thumbnail para contexto enriquecido
     let thumbData
     try {
       thumbData = (await conn.getFile(thumbnail))?.data
@@ -53,8 +54,8 @@ const handler = async (m, { conn, text, command }) => {
 
     const contextInfo = {
       externalAdReply: {
-        title,
-        body: wm,
+        title: title,
+        body: global.wm,
         mediaType: 1,
         previewType: 0,
         mediaUrl: url,
@@ -75,17 +76,20 @@ const handler = async (m, { conn, text, command }) => {
 
         if (!audioUrl) throw new Error('No se generó enlace de audio')
 
-        await conn.sendMessage(
+        await conn.sendFile(
           m.chat,
-          { audio: { url: audioUrl }, fileName: `${audioTitle}.mp3`, mimetype: 'audio/mpeg', ptt: true },
-          { quoted: m }
+          audioUrl,
+          `${audioTitle}.mp3`,
+          null,
+          m,
+          false,
+          { mimetype: 'audio/mpeg', ptt: true }
         )
       } catch {
         return conn.reply(m.chat, '⚠️ *No pude enviar el audio, puede ser peso o error en la URL. Intenta luego.*', m)
       }
     } else if (['play2', 'ytv', 'ytmp4', 'mp4'].includes(command)) {
       try {
-        // Aquí podrías cambiar a otra API para video si quieres
         const res = await fetch(`https://api.stellarwa.xyz/dow/ytmp4?url=${encodeURIComponent(url)}`)
         const json = await res.json()
         const videoUrl = json?.data?.dl
