@@ -45,12 +45,12 @@ global.yukiJadibts = true
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
-global.packname = '✦☁︎ Mai-Bot ☁︎✦'
-global.botname = '✿ 𝙈𝙖𝙞 ✧'
-global.wm = '✿❀ 𝙈𝙖𝙞 𝘽𝙤𝙩 ❀✿'
-global.author = '© 𝙈𝙖𝙙𝙚 𝙬𝙞𝙩𝙝 ☁︎ Wirk ✧'
-global.dev = '☄︎ 𝘿𝙚𝙨𝙖𝙧𝙧𝙤𝙡𝙡𝙖𝙙𝙤 𝙥𝙤𝙧 ☁︎ Wirk ✦'
-global.textbot = '✎ 𝙈𝙖𝙞 - 𝘽𝙮 ☁︎ Wirk ✿'
+global.packname = '☁︎ Mai ☁︎'
+global.botname = '✿ Mai ✧'
+global.wm = '❀ Mai Bot ❀'
+global.author = '© Made with ☁︎ Wirk ✧'
+global.dev = '☄︎ Hecho por ☁︎ Wirk ✦'
+global.textbot = '✎ Mai - By ☁︎ Wirk ✿'
 global.etiqueta = 'ⁱᵃᵐ|☁︎Wirk☁︎'
 global.namecanal = 'ᰔᩚ Mai Channel • Updates ᰔᩚ'
 global.idcanal = '120363403739366547@newsletter'
