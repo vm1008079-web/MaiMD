@@ -25,16 +25,16 @@ let handler = async (m, { conn, args }) => {
   const txt = `
 ✧･ﾟ: *✦ Hola, Soy ${botname} ✦* :･ﾟ✧
 ╭━━↷ 
-┃ ᰔᩚ Cliente *»* @${userId.split('@')[0]}
-┃ ☁︎ Modo *»* Público
-┃ ❀ Bot *»* ${(conn.user.jid == global.conn.user.jid ? 'Principal 🅥' : 'Prem Bot 🅑')}
-┃ ✐ Actividad *»* ${uptime}
-┃ ✿ Usuarios *»* ${totalreg}
-┃ ✦ Comandos *»* ${totalCommands}
-┃ ✧ Baileys *»* Multi Device
-┃ ᰔᩚ Moneda *»* ${global.moneda}
-╰━━
-✎ Crea tu Sub-Bot con *#qr* o *#code*
+│ ᰔᩚ Cliente *»* @${userId.split('@')[0]}
+│ ☁︎ Modo *»* Público
+│ ❀ Bot *»* ${(conn.user.jid == global.conn.user.jid ? 'Principal 🅥' : 'Prem Bot 🅑')}
+│ ✐ Actividad *»* ${uptime}
+│ ✿ Usuarios *»* ${totalreg}
+│ ✦ Comandos *»* ${totalCommands}
+│ ✧ Baileys *»* Multi Device
+│ ᰔᩚ Moneda *»* ${global.moneda}
+╰──────────────────
+❐ Crea tu Sub-Bot con *#qr* o *#code*
 
 • :･ﾟ⊹˚• \`『 Info-Bot 』\` •˚⊹:･ﾟ•
 
