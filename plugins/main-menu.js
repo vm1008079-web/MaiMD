@@ -32,7 +32,7 @@ let handler = async (m, { conn, args }) => {
 ┃ ✿ Usuarios » ${totalreg}
 ┃ ✦ Comandos » ${totalCommands}
 ┃ ✧ Baileys » Multi Device
-┃ ᰔᩚ Moneda » ${global.moneda
+┃ ᰔᩚ Moneda » ${global.moneda}
 ╰━━↷
 ✎ Crea tu Sub-Bot con *#qr* o *#code*
 
