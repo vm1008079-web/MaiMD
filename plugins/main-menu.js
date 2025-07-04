@@ -564,7 +564,7 @@ let handler = async (m, { conn, args }) => {
 ❀ *#pvp • #suit* + <mencion>
 > ✦ Juega un pvp contra otro usuario.
 ❀ *#ttt*
-> ✦ Crea una sala de juego.
+> ✦ Crea una sala de juego..
 `.trim() // corté el mensaje para no repetir el texto completo aquí
 
   await conn.sendMessage(m.chat, {
