@@ -55,7 +55,7 @@ const handler = async (m, { conn, text, command }) => {
     const contextInfo = {
       externalAdReply: {
         title: title,
-        body: global.wm,
+        body: ago,
         mediaType: 1,
         previewType: 0,
         mediaUrl: url,
