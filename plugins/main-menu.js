@@ -1,48 +1,48 @@
-import { getSubBotConfig } from '../lib/getSubBotConfig.js'
+//Hecho por Ado github.com/Ado-rgb
+import fs from 'fs'
+import path from 'path'
+import { promises as fsPromises } from 'fs'
+import getSubBotConfig from '../lib/getSubBotConfig.js' // tu archivo que ya hiciste
 
 let handler = async (m, { conn, args }) => {
-  let userId = (m.mentionedJid && m.mentionedJid[0]) || m.sender
-  let user = global.db.data.users[userId]
-  let name = await conn.getName(userId)
-  let _uptime = process.uptime() * 1000
-  let uptime = clockString(_uptime)
-  let totalreg = Object.keys(global.db.data.users).length
-  let totalCommands = Object.values(global.plugins).filter(v => v.help && v.tags).length
+  const senderNumber = m.sender.replace(/[^0-9]/g, '')
+  const isSubBot = fs.existsSync(`./JadiBots/${senderNumber}`)
+  let botname = global.botname
+  let banner = global.banner
 
-  let senderNumber = m.sender.replace(/[^0-9]/g, '')
-  let config = getSubBotConfig(senderNumber)
+  if (isSubBot) {
+    const config = await getSubBotConfig(senderNumber)
+    if (config?.name) botname = config.name
+    if (config?.banner) banner = config.banner
+  }
 
-  // Personalización sub-bot
-  let nombreBot = config.name || global.botname
-  let imgMenu = config.menuImage || global.banner
+  const userId = (m.mentionedJid && m.mentionedJid[0]) || m.sender
+  const _uptime = process.uptime() * 1000
+  const uptime = clockString(_uptime)
+  const totalreg = Object.keys(global.db.data.users).length
+  const totalCommands = Object.values(global.plugins).filter(v => v.help && v.tags).length
 
-  let txt = `
- Hola! Soy *${nombreBot}* (｡•̀ᴗ-)✧
-Aquí tienes la lista de comandos
-╭┈ ↷
-│ᰔᩚ Cliente » @${userId.split('@')[0]}
-│❀ Modo » Publico
-│✦ Bot » ${(conn.user.jid == global.conn.user.jid ? 'Principal 🅥' : 'Prem Bot 🅑')}
-│ⴵ Activada » ${uptime}
-│✰ Usuarios » ${totalreg}
-│✧ Comandos » ${totalCommands}
-│🜸 Baileys » Multi Device
-╰─────────────────
-... (aquí sigue todo tu texto completo del menú)
+  const txt = `
+🌷 𝑯𝒐𝒍𝒂! 𝑺𝒐𝒚 ${botname} ʕ•́ᴥ•̀ʔっ♡
+
+Aquí tienes tu menú actualizado ✧
+
+╭──────────────
+│  Cliente » @${userId.split('@')[0]}
+│  Sesión » ${isSubBot ? 'Sub-Bot 🅑' : 'Principal 🅥'}
+│  Usuarios » ${totalreg}
+│  Comandos » ${totalCommands}
+│  Uptime » ${uptime}
+╰──────────────
+
+Utiliza *#help* o *#comandos* para ver todas las categorías disponibles.
 `.trim()
 
   await conn.sendMessage(m.chat, {
-    image: { url: imgMenu },
+    image: { url: banner },
     caption: txt,
     contextInfo: {
-      mentionedJid: [m.sender, userId],
-      isForwarded: true,
-      forwardedNewsletterMessageInfo: {
-        newsletterJid: idcanal,
-        newsletterName: namecanal,
-        serverMessageId: -1,
-      },
-      forwardingScore: 999
+      mentionedJid: [m.sender, userId]
     }
   }, { quoted: m })
 }
@@ -54,8 +54,8 @@ handler.command = ['menu', 'menú', 'help']
 export default handler
 
 function clockString(ms) {
-  let seconds = Math.floor((ms / 1000) % 60)
-  let minutes = Math.floor((ms / (1000 * 60)) % 60)
-  let hours = Math.floor((ms / (1000 * 60 * 60)) % 24)
-  return `${hours}h ${minutes}m ${seconds}s`
+  let h = Math.floor(ms / 3600000)
+  let m = Math.floor(ms / 60000) % 60
+  let s = Math.floor(ms / 1000) % 60
+  return `${h}h ${m}m ${s}s`
 }
