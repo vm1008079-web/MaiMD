@@ -45,13 +45,13 @@ const handler = async (m, { conn, text, command }) => {
 
     // Mensaje de info decorado y ordenado
     const infoMessage = 
-`❀ *Descargando* ✦ *<${title}>*
+`❀ *<${title}>*
 
-✧ *Canal:* ${canal}
-✰ *Vistas:* ${formattedViews}
-ⴵ *Duración:* ${timestamp}
-✐ *Publicado:* ${ago}
-☁︎ *Link:* ${url}`
+> ✧ *Canal :* ${canal}
+> ✰ *Vistas :* ${formattedViews}
+> ⴵ *Duración :* ${timestamp}
+> ✐ *Publicado :* ${ago}
+> ☁︎ *Link :* ${url}`
 
     // Obtener thumbnail para contexto enriquecido
     let thumbData
@@ -63,7 +63,7 @@ const handler = async (m, { conn, text, command }) => {
 
     const contextInfo = {
       externalAdReply: {
-        title: botname,
+        title: wm,
         body: '',
         mediaType: 1,
         previewType: 0,
