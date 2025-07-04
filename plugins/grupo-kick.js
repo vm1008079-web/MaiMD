@@ -35,7 +35,7 @@ var handler = async (m, { conn, args }) => {
     const ownerGroup = groupMetadata.owner || m.chat.split`-`[0] + '@s.whatsapp.net';
     const ownerBot = global.owner[0][0] + '@s.whatsapp.net';
 
-    if (user === conn.user.jid) return m.reply(`☄︎😹 No me puedo sacar a mí misma we`);
+    if (user === conn.user.jid) return m.reply(`☄︎ No me puedo sacar a mí misma we`);
     if (user === ownerGroup) return m.reply(`✦👑 Ese es el dueño del grupo`);
     if (user === ownerBot) return m.reply(`☁︎💥 Ese es el creador del bot`);
 
