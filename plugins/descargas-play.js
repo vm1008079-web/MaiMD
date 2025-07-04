@@ -9,27 +9,20 @@ const handler = async (m, { conn, text, command }) => {
       return conn.reply(m.chat, `✦ *Pon el nombre o enlace de la canción para descargar.*`, m, rcanal)
     }
 
-    // Detectar ID de YouTube o usar texto para buscar
     const videoIdMatch = text.match(youtubeRegexID)
     const searchQuery = videoIdMatch ? `https://youtu.be/${videoIdMatch[1]}` : text
 
-    // Buscar video con yt-search
     let searchResult = await yts(searchQuery)
 
-    // Si tiene ID, buscar exacto
     if (videoIdMatch) {
       const videoId = videoIdMatch[1]
       searchResult = searchResult.all.find(v => v.videoId === videoId) || searchResult.videos.find(v => v.videoId === videoId)
     }
 
-    // Tomar primer video válido
     const video = searchResult.all?.[0] || searchResult.videos?.[0] || searchResult
 
-    if (!video) {
-      return conn.reply(m.chat, '*✧ No encontré resultados para esa búsqueda.*', m)
-    }
+    if (!video) return conn.reply(m.chat, '*✧ No encontré resultados para esa búsqueda.*', m)
 
-    // Datos del video con fallback
     const {
       title = 'Desconocido',
       thumbnail = '',
@@ -43,13 +36,12 @@ const handler = async (m, { conn, text, command }) => {
     const formattedViews = formatViews(views)
     const canal = author.name || 'Desconocido'
 
-    // Mensaje de info decorado y ordenado
-    const infoMessage = 
-`> ✧ *Canal :* ${canal}
-> ✰ *Vistas :* ${formattedViews}
-> ⴵ *Duración :* ${timestamp}
-> ✐ *Publicado :* ${ago}
-> ☁︎ *Link :* ${url}`
+    const infoMessage =
+`✧ Canal: *${canal}*
+✰ Vistas: *${formattedViews}*
+ⴵ Duración: *${timestamp}*
+✐ Publicado: *${ago}*
+☁︎ Link: ${url}`
 
     // Obtener thumbnail para contexto enriquecido
     let thumbData
@@ -61,7 +53,7 @@ const handler = async (m, { conn, text, command }) => {
 
     const contextInfo = {
       externalAdReply: {
-        title: title,
+        title,
         body: wm,
         mediaType: 1,
         previewType: 0,
@@ -74,13 +66,12 @@ const handler = async (m, { conn, text, command }) => {
 
     await conn.reply(m.chat, infoMessage, m, { contextInfo }, rcanal)
 
-    // Enviar audio o video según comando
     if (['play', 'yta', 'ytmp3', 'playaudio'].includes(command)) {
       try {
-        const res = await fetch(`https://theadonix-api.vercel.app/api/ytmp3?url=${url}`)
+        const res = await fetch(`https://theadonix-api.vercel.app/api/ytmp3?url=${encodeURIComponent(url)}`)
         const json = await res.json()
-        const audioUrl = json?.data?.dl
-        const audioTitle = json?.data?.title || title
+        const audioUrl = json?.result?.audio
+        const audioTitle = json?.result?.title || title
 
         if (!audioUrl) throw new Error('No se generó enlace de audio')
 
@@ -94,7 +85,8 @@ const handler = async (m, { conn, text, command }) => {
       }
     } else if (['play2', 'ytv', 'ytmp4', 'mp4'].includes(command)) {
       try {
-        const res = await fetch(`https://api.stellarwa.xyz/dow/ytmp4?url=${url}`)
+        // Aquí podrías cambiar a otra API para video si quieres
+        const res = await fetch(`https://api.stellarwa.xyz/dow/ytmp4?url=${encodeURIComponent(url)}`)
         const json = await res.json()
         const videoUrl = json?.data?.dl
         const videoTitle = json?.data?.title || title
