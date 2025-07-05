@@ -4,7 +4,7 @@ import fetch from 'node-fetch'
 const handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) return m.reply(`🎧 Pon el nombre o enlace de la canción\nEj: *${usedPrefix + command} Peso pluma bellakeo*`)
 
-  await conn.sendMessage(m.chat, { react: { text: '🎶', key: m.key } })
+  await conn.sendMessage(m.chat, { react: { text: '🕒', key: m.key } })
 
   // Busca en yt
   let search = await ytSearch(text)
