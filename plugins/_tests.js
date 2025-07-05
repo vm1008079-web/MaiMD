@@ -67,7 +67,7 @@ ${videoUrl}`.trim()
     await conn.sendMessage(m.chat, {
       video: { url: videoDl },
       mimetype: 'video/mp4',
-      caption: `🔥 Tu video 📍`,
+      caption: ``,
     }, { quoted: m })
 
   } catch (e) {
