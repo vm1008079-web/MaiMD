@@ -1,7 +1,7 @@
 {
 "name": "Mai-v2",
 "version": "2.3.5",
-"description": "WhatsApp Bot Multi Device",
+"description": "Multi Device Bot Whatsapp",
 "main": "index.js",
 "type": "module",
 "directories": {
@@ -18,16 +18,16 @@
 "eslint": "eslint .",
 "eslintfix": "eslint --fix ."
 },
-"homepage": "https://github.com/The-King-Destroy/Yuki_Suou-Bot",
+"homepage": "https://github.com/Ado-rgb/MaiMD",
 "author": {
-"name": "The-King-Destroy"
+"name": "Ado-rgb"
 },
 "repository": {
 "type": "git",
-"url": "git+https://github.com/The-King-Destroy/Yuki_Suou-Bot.git"
+"url": "git+https://github.com/Ado-rgb/MaiMD.git"
 },
 "bugs": {
-"url": "https://github.com/The-King-Destroy/Yuki_Suou-Bot/issues"
+"url": "https://github.com/Ado-rgb/MaiMD/issues"
 },
 "license": "MIT-License",
 "dependencies": {
