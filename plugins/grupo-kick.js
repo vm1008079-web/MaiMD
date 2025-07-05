@@ -2,11 +2,20 @@ var handler = async (m, { conn, args }) => {
   if (!m.isGroup) return m.reply('❐✦ Este comando solo se usa en grupos.');
 
   const groupMetadata = await conn.groupMetadata(m.chat);
+  const participants = groupMetadata.participants || []
+  const senderId = m.sender;
 
-  console.log('✎☁︎ Participantes del grupo:');
-  groupMetadata.participants.forEach(p => {
-    console.log(`- ${p.id} admin: ${p.admin || 'miembro'}`);
-  });
+  // Buscar si el usuario que usó el comando es admin
+  const isAdmin = participants.some(p =>
+    p.id === senderId &&
+    (p.admin === 'admin' || p.admin === 'superadmin')
+  );
+
+  const isGroupOwner = senderId === groupMetadata.owner;
+
+  if (!isAdmin && !isGroupOwner) {
+    return m.reply('✧✿ Solo los admins o el dueño del grupo pueden usar este comando.');
+  }
 
   // Obtener usuario a expulsar
   let user;
@@ -33,7 +42,7 @@ var handler = async (m, { conn, args }) => {
     await conn.groupParticipantsUpdate(m.chat, [user], 'remove');
     await m.reply(`❀ Usuario eliminado con éxito`);
   } catch (e) {
-    await m.reply(`✿ No pude expulsar al usuario. Puede que no tenga permisos`);
+    await m.reply(`✿ No pude expulsar al usuario. Puede que no tenga permisos o no sea válido.`);
   }
 };
 
@@ -41,6 +50,6 @@ handler.help = ['kick'];
 handler.tags = ['group'];
 handler.command = ['kick','echar','hechar','sacar','ban'];
 handler.group = true;
-handler.admin = true;
+handler.botAdmin = true;
 
 export default handler;
