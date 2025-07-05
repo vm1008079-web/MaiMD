@@ -56,7 +56,6 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     const infoMsg = `
 ✦  *${title}*
 ✧  Calidad: *${json.result.quality}p*
-✦  Tamaño: *${(fileData.size / 1024 / 1024).toFixed(1)} MB*
 ${videoUrl}`.trim()
 
     await conn.sendMessage(m.chat, {
