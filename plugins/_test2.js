@@ -25,7 +25,7 @@ let handler = async (m, { conn }) => {
           {
             name: 'cta_copy',
             buttonParamsJson: JSON.stringify({
-              display_text: ' Copiar código para vincular a subbot...              .',
+              display_text: ' Copiar Frase',
               copy_code: secret
             })
           }
