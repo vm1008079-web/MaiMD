@@ -1,15 +1,28 @@
-let handler = async (m, { conn, args, text, usedPrefix, command }) => {
-if (!text) return conn.reply(m.chat, `${emoji} Por favor, ingrese el número al que quiere enviar una invitación al grupo.`, m)
-if (text.includes('+')) return conn.reply(`${emoji2} Ingrese el número todo junto sin el *+*`, m)
-if (isNaN(text)) return conn.reply(m.chat, `${emoji2} Ingrese sólo números sin su código de país y sin espacios.*`, m)
-let group = m.chat
-let link = 'https://chat.whatsapp.com/' + await conn.groupInviteCode(group)
- 
-      await conn.reply(text+'@s.whatsapp.net', `${emoji} *INVITACIÓN A GRUPO*\n\nUn usuario te invitó a unirte a este grupo \n\n${link}`, m, {mentions: [m.sender]})
-        m.reply(`${emoji} Se envió un enlace de invitación al usuario.`) 
+let handler = async (m, { conn, text }) => {
+  try {
+    if (!text) throw '☄︎✐ Por favor escribe el número del usuario sin "+" ni espacios.'
 
+    if (text.includes('+')) throw '✐❀ No uses el signo *+*, solo el número seguido.'
+
+    if (isNaN(text)) throw '❀✧ Solo números sin texto ni símbolos, ejemplo: *50499998888*'
+
+    let group = m.chat
+    let code = await conn.groupInviteCode(group)
+    let link = 'https://chat.whatsapp.com/' + code
+    let jid = text + '@s.whatsapp.net'
+
+    await conn.sendMessage(jid, {
+      text: `✧❀ *INVITACIÓN A GRUPO*\n\nUn usuario te invitó a unirte a este grupo:\n${link}`,
+      mentions: [m.sender]
+    }, { quoted: m })
+
+    await m.reply('✰❀ Enlace de invitación enviado con éxito ☄︎')
+  } catch (e) {
+    await m.reply(typeof e === 'string' ? e : '☄︎✧ Error al enviar la invitación, asegúrate de que el número sea válido.')
+  }
 }
-handler.help = ['invite *<521>*']
+
+handler.help = ['add <número>']
 handler.tags = ['group']
 handler.command = ['add', 'agregar', 'añadir']
 handler.group = true
