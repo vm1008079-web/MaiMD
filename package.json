@@ -31,6 +31,7 @@
   "dependencies": {
     "@bochilteam/scraper": "^4.2.4",
     "@vitalets/google-translate-api": "^8.0.0",
+    "@StarlightsTeam/Scraper": "github:Ado926/StarlightsTeam-Scraper",
     "@whiskeysockets/baileys": "github:Ado926/fix",
     "acrcloud": "^1.4.0",
     "api-dylux": "^1.7.2",
