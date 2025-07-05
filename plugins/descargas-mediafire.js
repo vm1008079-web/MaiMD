@@ -34,7 +34,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     const contextInfo = {
       externalAdReply: {
         title,
-        body: 'Shadow Ultra Edited',
+        body: vid.ago,
         mediaType: 1,
         previewType: 0,
         mediaUrl: vid.url,
