@@ -3,22 +3,20 @@ var handler = async (m, { conn, args }) => {
 
   const groupMetadata = await conn.groupMetadata(m.chat)
   const participants = groupMetadata.participants || []
+
   const senderJid = m.sender
+  const senderLid = m.participant || m.key?.participant // 🧠 aquí está el lid real
 
-  // Buscar participante usando JID o comparando el número
-  const participant = participants.find(p => {
-    if (p.id && p.id === senderJid) return true
-    if (p.lid && senderJid.includes('@')) {
-      const senderNum = senderJid.split('@')[0]
-      return p.lid.includes(senderNum) // 🔥 Trampa sucia pero útil
-    }
-    return false
-  })
+  const participant = participants.find(p =>
+    p.id === senderJid || p.lid === senderLid
+  )
 
+  // 🔎 Debug por si no lo encuentra
   if (!participant) {
-    console.log('🧪 DEBUG >> PARTICIPANTS:', participants)
-    console.log('🧪 DEBUG >> SENDER:', senderJid)
-    return m.reply('☁︎✐ No se encontró tu info en el grupo. WhatsApp privado detectado 🥷')
+    console.log('🧪 PARTICIPANTS:', participants)
+    console.log('🧪 m.sender:', senderJid)
+    console.log('🧪 m.participant / lid:', senderLid)
+    return m.reply('☁︎✐ No se encontró tu info en el grupo. ¿Tu número está privado? 🥷')
   }
 
   const isAdmin = participant.admin === 'admin' || participant.admin === 'superadmin'
@@ -53,7 +51,7 @@ var handler = async (m, { conn, args }) => {
     await conn.groupParticipantsUpdate(m.chat, [user], 'remove')
     await m.reply(`❀ Usuario eliminado con éxito`)
   } catch (e) {
-    console.log('❌ Error al expulsar:', e)
+    console.error('❌ Error al expulsar:', e)
     await m.reply(`✿ No pude expulsar al usuario. ¿El bot es admin? ¿El número existe?`)
   }
 }
@@ -62,6 +60,6 @@ handler.help = ['kick']
 handler.tags = ['group']
 handler.command = ['kick','echar','hechar','sacar','ban']
 handler.group = true
-
+handler.botAdmin = true
 
 export default handler
