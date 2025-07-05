@@ -1,12 +1,12 @@
 import fetch from "node-fetch"
-import yts from 'yt-search'
+import yts from "yt-search"
 
 const youtubeRegexID = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-zA-Z0-9_-]{11})/
 
 const handler = async (m, { conn, text, command }) => {
   try {
     if (!text || !text.trim()) {
-      return conn.reply(m.chat, `✦ *Pon el nombre o enlace de la canción para descargar.*`, m, rcanal)
+      return conn.reply(m.chat, `✦ *Pon el nombre o enlace de la canción para descargar.*`, m)
     }
 
     const videoIdMatch = text.match(youtubeRegexID)
@@ -45,27 +45,8 @@ const handler = async (m, { conn, text, command }) => {
 > ✐ *Publicado :* ${ago}
 > ☁︎ *Link :* ${url}`
 
-    let thumbData
-    try {
-      thumbData = (await conn.getFile(thumbnail))?.data
-    } catch {
-      thumbData = null
-    }
-
-    const contextInfo = {
-      externalAdReply: {
-        title: title,
-        body: ago,
-        mediaType: 1,
-        previewType: 0,
-        mediaUrl: url,
-        sourceUrl: url,
-        thumbnail: thumbData,
-        renderLargerThumbnail: true,
-      }
-    }
-
-    await conn.reply(m.chat, infoMessage, m, { contextInfo }, rcanal)
+    // Enviar info sin contextInfo para evitar líos
+    await conn.reply(m.chat, infoMessage, m)
 
     if (['play', 'yta', 'ytmp3', 'playaudio'].includes(command)) {
       try {
@@ -83,7 +64,10 @@ const handler = async (m, { conn, text, command }) => {
           null,
           m,
           false,
-          { mimetype: 'audio/mpeg', ptt: true }
+          {
+            mimetype: 'audio/mpeg',
+            ptt: true
+          }
         )
       } catch {
         return conn.reply(m.chat, '⚠️ *No pude enviar el audio, puede ser peso o error en la URL. Intenta luego.*', m)
