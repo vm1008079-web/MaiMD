@@ -2,6 +2,8 @@ import ytSearch from 'yt-search'
 import axios from 'axios'
 import crypto from 'crypto'
 
+const delay = ms => new Promise(r => setTimeout(r, ms))
+
 const ogmp3 = {
   api: {
     base: "https://api3.apiapi.lat",
@@ -11,6 +13,7 @@ const ogmp3 = {
       c: "https://api3.apiapi.lat"
     }
   },
+
   headers: {
     'authority': 'api.apiapi.lat',
     'content-type': 'application/json',
@@ -18,137 +21,222 @@ const ogmp3 = {
     'referer': 'https://ogmp3.lat/',
     'user-agent': 'Postify/1.0.0'
   },
+
   formats: {
-    video: ['240', '360', '480', '720', '1080']
+    video: ['240', '360', '480', '720', '1080'],
+    audio: ['64', '96', '128', '192', '256', '320']
   },
+
   default_fmt: {
-    video: '720'
+    video: '720',
+    audio: '320'
   },
+
   utils: {
-    hash: () => crypto.randomBytes(16).toString('hex'),
-    encoded: (str) => [...str].map(c => String.fromCharCode(c.charCodeAt(0) ^ 1)).join(''),
-    enc_url: (url, sep = ",") => [...url].map(c => c.charCodeAt(0)).join(sep).split(sep).reverse().join(sep)
+    hash: () => {
+      const array = new Uint8Array(16)
+      crypto.getRandomValues(array)
+      return Array.from(array, byte => byte.toString(16).padStart(2, "0")).join("")
+    },
+
+    encoded: (str) => {
+      let result = ""
+      for (let i = 0; i < str.length; i++) {
+        result += String.fromCharCode(str.charCodeAt(i) ^ 1)
+      }
+      return result
+    },
+
+    enc_url: (url, separator = ",") => {
+      const codes = []
+      for (let i = 0; i < url.length; i++) {
+        codes.push(url.charCodeAt(i))
+      }
+      return codes.join(separator).split(separator).reverse().join(separator)
+    }
   },
+
   isUrl: str => {
     try {
-      const u = new URL(str)
-      return [/^(.+\.)?youtube\.com$/, /^youtu\.be$/].some(rx => rx.test(u.hostname)) && !u.searchParams.has("playlist")
-    } catch {
+      const url = new URL(str)
+      const hostname = url.hostname.toLowerCase()
+      const b = [/^(.+\.)?youtube\.com$/, /^(.+\.)?youtube-nocookie\.com$/, /^youtu\.be$/]
+      return b.some(a => a.test(hostname)) && !url.searchParams.has("playlist")
+    } catch (_) {
       return false
     }
   },
+
   youtube: url => {
-    const rx = [
-      /watch\?v=([a-zA-Z0-9_-]{11})/,
-      /embed\/([a-zA-Z0-9_-]{11})/,
-      /v\/([a-zA-Z0-9_-]{11})/,
-      /shorts\/([a-zA-Z0-9_-]{11})/,
+    if (!url) return null
+    const b = [
+      /youtube\.com\/watch\?v=([a-zA-Z0-9_-]{11})/,
+      /youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/,
+      /youtube\.com\/v\/([a-zA-Z0-9_-]{11})/,
+      /youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/,
       /youtu\.be\/([a-zA-Z0-9_-]{11})/
     ]
-    for (const r of rx) {
-      const match = url.match(r)
-      if (match) return match[1]
+    for (let a of b) {
+      if (a.test(url)) return url.match(a)[1]
     }
     return null
   },
+
   request: async (endpoint, data = {}, method = 'post') => {
     try {
-      const hosts = Object.values(ogmp3.api.endpoints)
-      const base = hosts[Math.floor(Math.random() * hosts.length)]
-      const url = endpoint.startsWith('http') ? endpoint : `${base}${endpoint}`
-      const { data: res } = await axios({ method, url, data: method === 'post' ? data : undefined, headers: ogmp3.headers })
-      return { status: true, code: 200, data: res }
+      const ae = Object.values(ogmp3.api.endpoints)
+      const be = ae[Math.floor(Math.random() * ae.length)]
+      const fe = endpoint.startsWith('http') ? endpoint : `${be}${endpoint}`
+      const { data: response } = await axios({
+        method,
+        url: fe,
+        data: method === 'post' ? data : undefined,
+        headers: ogmp3.headers
+      })
+      return { status: true, code: 200, data: response }
     } catch (error) {
       return { status: false, code: error.response?.status || 500, error: error.message }
     }
   },
-  checkStatus: async (id) => {
-    const c = ogmp3.utils.hash(), d = ogmp3.utils.hash()
-    const endpoint = `/${c}/status/${ogmp3.utils.encoded(id)}/${d}/`
-    return await ogmp3.request(endpoint, { data: id })
+
+  async checkStatus(id) {
+    try {
+      const c = this.utils.hash()
+      const d = this.utils.hash()
+      const endpoint = `/${c}/status/${this.utils.encoded(id)}/${d}/`
+      const response = await this.request(endpoint, { data: id })
+      return response
+    } catch (error) {
+      return { status: false, code: 500, error: error.message }
+    }
   },
-  checkProgress: async (data) => {
-    let tries = 0
-    while (tries < 300) {
-      tries++
-      const res = await ogmp3.checkStatus(data.i)
-      if (!res.status) {
-        await new Promise(r => setTimeout(r, 2000))
-        continue
-      }
-      const s = res.data
-      if (s.s === 'C') return s
-      if (s.s === 'P') {
-        await new Promise(r => setTimeout(r, 2000))
-        continue
+
+  async checkProgress(data) {
+    try {
+      let attempts = 0
+      let maxAttempts = 300
+      while (attempts < maxAttempts) {
+        attempts++
+        const res = await this.checkStatus(data.i)
+        if (!res.status) {
+          await new Promise(resolve => setTimeout(resolve, 2000))
+          continue
+        }
+        const stat = res.data
+        if (stat.s === "C") return stat
+        if (stat.s === "P") {
+          await new Promise(resolve => setTimeout(resolve, 2000))
+          continue
+        }
+        return null
       }
       return null
+    } catch (_) {
+      return null
     }
-    return null
   },
-  download: async (link, format = '720', type = 'video') => {
-    if (!link || !ogmp3.isUrl(link)) return { status: false, error: '❌ Link inválido' }
 
+  download: async (link, format, type = 'video') => {
+    if (!link) return { status: false, code: 400, error: "¿Dónde está el link we?" }
+    if (!ogmp3.isUrl(link)) return { status: false, code: 400, error: "Eso no es un link de YouTube válido pa" }
+    if (!['video', 'audio'].includes(type)) return { status: false, code: 400, error: "¿Querés audio o video loco?" }
+    if (!format) format = type === 'audio' ? ogmp3.default_fmt.audio : ogmp3.default_fmt.video
+    const valid_fmt = type === 'audio' ? ogmp3.formats.audio : ogmp3.formats.video
+    if (!valid_fmt.includes(format)) return { status: false, code: 400, error: `Formato inválido. Opciones: ${valid_fmt.join(', ')}` }
     const id = ogmp3.youtube(link)
-    if (!id) return { status: false, error: 'No pude sacar la ID del video' }
+    if (!id) return { status: false, code: 400, error: "No pude extraer la ID del video 😿" }
 
-    const c = ogmp3.utils.hash(), d = ogmp3.utils.hash()
-    const req = {
-      data: ogmp3.utils.encoded(link),
-      format: "1",
-      referer: "https://ogmp3.cc",
-      mp4Quality: format,
-      userTimeZone: new Date().getTimezoneOffset().toString()
-    }
+    try {
+      let retries = 0
+      const maxRetries = 20
+      while (retries < maxRetries) {
+        retries++
+        const c = ogmp3.utils.hash()
+        const d = ogmp3.utils.hash()
+        const req = {
+          data: ogmp3.utils.encoded(link),
+          format: type === 'audio' ? "0" : "1",
+          referer: "https://ogmp3.cc",
+          mp3Quality: type === 'audio' ? format : null,
+          mp4Quality: type === 'video' ? format : null,
+          userTimeZone: new Date().getTimezoneOffset().toString()
+        }
+        const resx = await ogmp3.request(`/${c}/init/${ogmp3.utils.enc_url(link)}/${d}/`, req)
+        if (!resx.status) {
+          if (retries === maxRetries) return resx
+          continue
+        }
 
-    const res = await ogmp3.request(`/${c}/init/${ogmp3.utils.enc_url(link)}/${d}/`, req)
-    if (!res.status) return res
+        const data = resx.data
+        if (data.le) return { status: false, code: 400, error: "Demasiado largo el video bro máx 3 horas" }
+        if (data.i === "blacklisted") return { status: false, code: 429, error: "Alcanzaste el límite diario 😿" }
+        if (data.e || data.i === "invalid") return { status: false, code: 400, error: "El video fue borrado o está restringido" }
 
-    const data = res.data
-    if (data.s === 'C') {
-      return {
-        status: true,
-        result: {
-          title: data.t || 'Sin título',
-          download: `${ogmp3.api.base}/${ogmp3.utils.hash()}/download/${ogmp3.utils.encoded(data.i)}/${ogmp3.utils.hash()}/`,
-          thumbnail: `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`,
-          url: link
+        if (data.s === "C") return {
+          status: true,
+          code: 200,
+          result: {
+            title: data.t || "Sin título",
+            type,
+            format,
+            thumbnail: `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`,
+            download: `${ogmp3.api.base}/${ogmp3.utils.hash()}/download/${ogmp3.utils.encoded(data.i)}/${ogmp3.utils.hash()}/`,
+            id,
+            quality: format
+          }
+        }
+
+        const prod = await ogmp3.checkProgress(data)
+        if (prod && prod.s === "C") return {
+          status: true,
+          code: 200,
+          result: {
+            title: prod.t || "Sin título",
+            type,
+            format,
+            thumbnail: `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`,
+            download: `${ogmp3.api.base}/${ogmp3.utils.hash()}/download/${ogmp3.utils.encoded(prod.i)}/${ogmp3.utils.hash()}/`,
+            id,
+            quality: format
+          }
         }
       }
+      return { status: false, code: 500, error: "Demasiados intentos fallidos 😩" }
+    } catch (error) {
+      return { status: false, code: 500, error: error.message }
     }
-
-    const proc = await ogmp3.checkProgress(data)
-    if (proc && proc.s === 'C') {
-      return {
-        status: true,
-        result: {
-          title: proc.t || 'Sin título',
-          download: `${ogmp3.api.base}/${ogmp3.utils.hash()}/download/${ogmp3.utils.encoded(proc.i)}/${ogmp3.utils.hash()}/`,
-          thumbnail: `https://i.ytimg.com/vi/${id}/maxresdefault.jpg`,
-          url: link
-        }
-      }
-    }
-
-    return { status: false, error: '⛔ Falló la descarga después de varios intentos' }
   }
 }
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
-  if (!text) return m.reply(`🎬 Escribe el nombre de un video\n\n📌 Ej: *${usedPrefix + command} Shakira Loba*`)
+  if (!text) return m.reply(`🎬 Escribe el nombre de un video\n\n📌 Ej: *${usedPrefix + command} Bizarrap Villano Antillano*`)
 
-  await conn.sendMessage(m.chat, { react: { text: '📥', key: m.key } })
+  await conn.sendMessage(m.chat, { react: { text: '🎞️', key: m.key } })
 
   let search = await ytSearch(text)
   let vid = search.videos[0]
-  if (!vid) return m.reply('❌ No encontré nada')
+  if (!vid) return m.reply('❌ No encontré nada we')
 
   let res = await ogmp3.download(vid.url, '720', 'video')
   if (!res.status) return m.reply(`💥 Error: ${res.error}`)
 
-  let { title, download, thumbnail, url } = res.result
-  let thumb = null
+  const { title, download, thumbnail, url } = res.result
 
+  let success = false
+  let attempts = 0
+  while (!success && attempts < 10) {
+    try {
+      const head = await axios.head(download)
+      const size = parseInt(head.headers['content-length'] || '0')
+      if (size > 100000) success = true
+      else await delay(2000)
+    } catch { await delay(2000) }
+    attempts++
+  }
+
+  if (!success) return m.reply('⛔ El video no terminó de procesarse, intenta de nuevo')
+
+  let thumb
   try {
     thumb = (await conn.getFile(thumbnail)).data
   } catch {}
@@ -159,14 +247,14 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       body: `✦ ${vid.timestamp} | 👁️ ${vid.views.toLocaleString()} | 📅 ${vid.ago}`,
       mediaType: 1,
       previewType: 0,
-      mediaUrl: url,
-      sourceUrl: url,
+      mediaUrl: vid.url,
+      sourceUrl: vid.url,
       thumbnail: thumb,
       renderLargerThumbnail: true
     }
   }
 
-  await conn.reply(m.chat, `✧ *Título:* ${title}\n✧ *Duración:* ${vid.timestamp}\n✧ *Vistas:* ${vid.views.toLocaleString()}\n✧ *Subido:* ${vid.ago}\n✧ *Canal:* ${vid.author.name}`, m, { contextInfo })
+  await conn.reply(m.chat, `✧ *Título:* ${title}\n✧ *Duración:* ${vid.timestamp}\n✧ *Vistas:* ${vid.views.toLocaleString()}\n✧ *Publicado:* ${vid.ago}\n✧ *Canal:* ${vid.author.name}`, m, { contextInfo })
 
   await conn.sendMessage(m.chat, {
     video: { url: download },
