@@ -46,7 +46,7 @@ const handler = async (m, { conn, text, command }) => {
 > ✐ *Publicado :* ${ago}
 > ☁︎ *Link :* ${url}`
 
-    // Obtener buffer de miniatura para mostrar en el mensaje
+    // Obtener buffer de miniatura para contextInfo
     let thumbData = null
     try {
       thumbData = (await conn.getFile(thumbnail)).data
@@ -69,6 +69,7 @@ const handler = async (m, { conn, text, command }) => {
 
     await conn.reply(m.chat, infoMessage, m, { contextInfo })
 
+    // Si es comando de audio
     if (['play', 'yta', 'ytmp3', 'playaudio'].includes(command)) {
       try {
         const res = await fetch(`https://theadonix-api.vercel.app/api/ytmp3?url=${encodeURIComponent(url)}`)
@@ -78,9 +79,20 @@ const handler = async (m, { conn, text, command }) => {
 
         if (!audioUrl) throw new Error('No se generó enlace de audio')
 
-        const { data: audioBuffer } = await axios.get(audioUrl, {
-          responseType: 'arraybuffer'
+        const response = await axios.get(audioUrl, {
+          responseType: 'arraybuffer',
+          headers: {
+            'User-Agent': 'WhatsApp/2.24.0.78 Android'
+          },
+          timeout: 60000
         })
+
+        const contentType = response.headers['content-type']
+        const audioBuffer = response.data
+
+        if (!/^audio\/mpeg/.test(contentType)) {
+          throw new Error('El archivo recibido no es un audio válido.')
+        }
 
         await conn.sendFile(
           m.chat,
@@ -94,10 +106,13 @@ const handler = async (m, { conn, text, command }) => {
             ptt: true
           }
         )
-      } catch {
-        return conn.reply(m.chat, '⚠️ *No pude enviar el audio, puede ser peso o error en la URL. Intenta luego.*', m)
+      } catch (e) {
+        return conn.reply(m.chat, '❌ *No pude enviar el audio, probablemente el archivo es inválido o muy pesado.*', m)
       }
-    } else if (['play2', 'ytv', 'ytmp4', 'mp4'].includes(command)) {
+    }
+
+    // Si es comando de video
+    else if (['play2', 'ytv', 'ytmp4', 'mp4'].includes(command)) {
       try {
         const res = await fetch(`https://api.stellarwa.xyz/dow/ytmp4?url=${encodeURIComponent(url)}`)
         const json = await res.json()
