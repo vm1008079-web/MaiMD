@@ -45,8 +45,28 @@ const handler = async (m, { conn, text, command }) => {
 > ✐ *Publicado :* ${ago}
 > ☁︎ *Link :* ${url}`
 
-    // Enviar info sin contextInfo para evitar líos
-    await conn.reply(m.chat, infoMessage, m)
+    // Obtener buffer de la miniatura para contextInfo
+    let thumbData = null
+    try {
+      thumbData = (await conn.getFile(thumbnail)).data
+    } catch {
+      thumbData = null
+    }
+
+    const contextInfo = {
+      externalAdReply: {
+        title,
+        body: ago,
+        mediaType: 1,
+        previewType: 0,
+        mediaUrl: url,
+        sourceUrl: url,
+        thumbnail: thumbData,
+        renderLargerThumbnail: true,
+      }
+    }
+
+    await conn.reply(m.chat, infoMessage, m, { contextInfo })
 
     if (['play', 'yta', 'ytmp3', 'playaudio'].includes(command)) {
       try {
