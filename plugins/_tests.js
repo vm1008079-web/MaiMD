@@ -57,7 +57,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 ✦  *${title}*
 ✧  Calidad: *${json.result.quality}p*
 ✦  Tamaño: *${(fileData.size / 1024 / 1024).toFixed(1)} MB*
-🔗  ${videoUrl}`.trim()
+${videoUrl}`.trim()
 
     await conn.sendMessage(m.chat, {
       image: thumbBuffer,
@@ -68,7 +68,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     await conn.sendMessage(m.chat, {
       video: { url: videoDl },
       mimetype: 'video/mp4',
-      caption: `🎬 *${title}*`,
+      caption: `*${title}*`,
     }, { quoted: m })
 
   } catch (e) {
@@ -79,6 +79,6 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
 handler.help = ['ytmp42 <nombre o link>']
 handler.tags = ['downloader']
-handler.command = ['ytmp42']
+handler.command = ['play2', 'mp4', 'ytmp4']
 
 export default handler
