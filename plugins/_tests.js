@@ -2,75 +2,70 @@ import fetch from 'node-fetch'
 import ytSearch from 'yt-search'
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
-  if (!text) return m.reply(`📽️ Escribe el nombre o link del video\n\nEj: *${usedPrefix + command} Roblox Perdón*`)
-
-  await conn.sendMessage(m.chat, { react: { text: '📡', key: m.key } })
-
-  // Si no es URL, hace búsqueda
-  let url = text
-  if (!/^https?:\/\//i.test(text)) {
-    let search = await ytSearch(text)
-    let vid = search.videos[0]
-    if (!vid) return m.reply('❌ No encontré ningún video con ese nombre')
-    url = vid.url
+  if (!text) {
+    return m.reply(`📽️ Escribe el nombre del video o link de YouTube\n\nEj: *${usedPrefix + command} Messi mejores goles*`)
   }
 
+  await conn.sendMessage(m.chat, { react: { text: '🔍', key: m.key } })
+
   try {
-    const api = `https://theadonix-api.vercel.app/api/ytmp4?url=${encodeURIComponent(url)}`
+    // Buscar video si es texto
+    let videoUrl = ''
+    let title = ''
+    let thumbnail = ''
+    let videoInfo = null
+
+    if (/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//.test(text)) {
+      videoUrl = text
+    } else {
+      let search = await ytSearch(text)
+      if (!search.videos.length) return m.reply('😿 No encontré nada, intenta con otro nombre')
+      videoInfo = search.videos[0]
+      videoUrl = videoInfo.url
+    }
+
+    // Llamar tu API
+    const api = `https://theadonix-api.vercel.app/api/ytmp4?url=${encodeURIComponent(videoUrl)}`
     const res = await fetch(api)
     const json = await res.json()
 
-    if (!json?.result?.video) return m.reply(`❌ Error: ${json.mensaje || 'No se pudo obtener el video'}`)
+    if (!json?.result?.video) return m.reply(`❌ No se pudo obtener el video`)
 
-    const { title, video, quality, filename } = json.result
+    const videoDl = json.result.video
+    title = json.result.title || 'Sin título'
+    thumbnail = videoInfo?.thumbnail || `https://i.ytimg.com/vi/${json.result.id || ''}/maxresdefault.jpg`
 
-    // Miniatura
-    let ytId = extractYTID(url)
-    let thumb = ytId ? `https://i.ytimg.com/vi/${ytId}/maxresdefault.jpg` : null
-    let thumbData = null
+    // Verificar que el video es válido (no de 11kb)
+    let fileData
     try {
-      thumbData = (await conn.getFile(thumb)).data
-    } catch {}
-
-    // contextInfo decorado
-    const contextInfo = {
-      externalAdReply: {
-        title: title,
-        body: `Calidad: ${quality}p • theadonix-api.vercel.app`,
-        mediaType: 1,
-        previewType: 0,
-        mediaUrl: url,
-        sourceUrl: url,
-        thumbnail: thumbData,
-        renderLargerThumbnail: true
-      }
+      fileData = await conn.getFile(videoDl)
+      if (!fileData || fileData.size < 15000) throw 'Archivo dañado o muy liviano'
+    } catch (e) {
+      return m.reply('💥 Error: El video está dañado o no se pudo obtener correctamente.')
     }
 
-    const info = `
-┌─⊷ 🎬 𝙑𝙄𝘿𝙀𝙊 𝙀𝙉 𝙈𝙋𝟰
-▢ ✦ Título: *${title}*
-▢ ✦ Calidad: *${quality}p*
-▢ ✦ Origen: *theadonix-api*
-└─────────────
-`.trim()
+    // Armar info decorada
+    const infoMsg = `
+╭━━━━〔 🎬 *VIDEO ENCONTRADO* 〕━━━━⬣
+✦ Título: *${title}*
+✧ Calidad: *${json.result.quality}p*
+✦ Tamaño: *${(fileData.size / 1024 / 1024).toFixed(2)} MB*
+✧ Archivo: *${json.result.filename || 'video.mp4'}*
+╰━━━━━━━━━━━━━━━━━━━━⬣`.trim()
 
-    await conn.sendMessage(m.chat, { text: info, contextInfo }, { quoted: m })
+    await conn.reply(m.chat, infoMsg, m)
 
+    // Enviar video
     await conn.sendMessage(m.chat, {
-      video: { url: video },
-      caption: `📹 *${title}*`,
-      mimetype: 'video/mp4'
+      video: { url: videoDl },
+      mimetype: 'video/mp4',
+      caption: `🎥 *${title}*`,
     }, { quoted: m })
 
   } catch (e) {
     console.error(e)
-    return m.reply('⚠️ Ocurrió un error al intentar obtener el video')
+    return m.reply('⚠️ Ocurrió un error al descargar el video. Intenta más tarde.')
   }
-}
-
-function extractYTID(url) {
-  const match = url.match(/(?:v=|\/)([0-9A-Za-z_-]{11})/)
-  return match ? match[1] : null
 }
 
 handler.help = ['ytmp42 <nombre o link>']
