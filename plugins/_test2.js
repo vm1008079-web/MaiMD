@@ -1,56 +1,45 @@
 import { generateWAMessageFromContent, proto } from '@whiskeysockets/baileys'
 
 let handler = async (m, { conn }) => {
+  // Frases random que se van a copiar al tocar el botón
   let frases = [
-    '🌟 Nunca dejes de brillar we',
-    '😼 Hoy es un buen día pa flojear',
-    '🚀 A darle que la vida es corta',
-    '🍕 Si la vida te da queso... ¡haz pizza!',
-    '🧠 Usa la cabeza, no solo el Wi-Fi xd'
+    '✨ Cree en ti o te parto el hocico xd',
+    '🌸 El mundo es tuyo si no te rindes we',
+    '🔥 El que no arriesga no gana y el que gana... gana',
+    '🧠 El conocimiento es poder, pero la práctica es clave',
+    '🚀 Hoy es un buen día pa romperla'
   ]
-  let frase = frases[Math.floor(Math.random() * frases.length)]
+  
+  // Escoge una random
+  let secret = frases[Math.floor(Math.random() * frases.length)]
+  let rtx2 = `📜 Aquí tienes tu frase:\n\n${secret}`
 
-  const messageContent = {
-    viewOnceMessage: {
-      message: {
-        messageContextInfo: {
-          deviceListMetadata: {},
-          deviceListMetadataVersion: 2
-        },
-        interactiveMessage: proto.Message.InteractiveMessage.create({
-          body: proto.Message.InteractiveMessage.Body.create({
-            text: frase
-          }),
-          footer: proto.Message.InteractiveMessage.Footer.create({
-            text: '✨ Frase motivacional random'
-          }),
-          header: proto.Message.InteractiveMessage.Header.create({
-            hasMediaAttachment: false
-          }),
-          nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.create({
-            buttons: [
-              {
-                name: 'cta_url',
-                buttonParamsJson: JSON.stringify({
-                  display_text: '🔥 Sigue el canal',
-                  url: 'https://whatsapp.com/channel/0029VbArz9fAO7RGy2915k3O',
-                  merchant_url: 'https://whatsapp.com/channel/0029VbArz9fAO7RGy2915k3O'
-                })
-              }
-            ]
-          })
-        })
+  // Armar mensaje con botón de copiar
+  const msg = generateWAMessageFromContent(m.chat, proto.Message.fromObject({
+    interactiveMessage: {
+      body: { text: rtx2 },
+      footer: { text: 'Mai By Wirk' }, // Footer kawaii
+      header: { hasMediaAttachment: false },
+      nativeFlowMessage: {
+        buttons: [
+          {
+            name: 'cta_copy',
+            buttonParamsJson: JSON.stringify({
+              display_text: ' Copiar código para vincular a subbot...              .',
+              copy_code: secret
+            })
+          }
+        ]
       }
     }
-  }
+  }), { quoted: m })
 
-  const msg = generateWAMessageFromContent(m.chat, messageContent, {})
   await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 }
 
-handler.help = ['frase']
+handler.help = ['frasecopy']
 handler.tags = ['fun']
-handler.command = ['fras']
+handler.command = ['frasecopy', 'frasecode']
 handler.register = true
 
 export default handler
