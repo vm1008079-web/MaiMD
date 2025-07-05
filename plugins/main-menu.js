@@ -34,6 +34,7 @@ let handler = async (m, { conn, args }) => {
 │ ᰔᩚ Moneda *»* ${global.moneda}
 ╰──────────────────
 ❐ Crea tu Sub-Bot con *#qr* o *#code*
+
 ✧ Y personalizalo con *#setbanner* y *#setname*
 
 • :･ﾟ⊹˚• \`『 Info-Bot 』\` •˚⊹:･ﾟ•
@@ -113,8 +114,6 @@ let handler = async (m, { conn, args }) => {
 ❍ Comandos de descargas para varios archivos.
 ❀ *#tiktok • #tt*
 > ✦ Descarga videos de TikTok.
-❀ *#mediafire • #mf*
-> ✦ Descargar un archivo de MediaFire.
 ❀ *#pinvid • #pinvideo* + [enlacé]
 > ✦ Descargar vídeos de Pinterest. 
 ❀ *#mega • #mg* + [enlacé]
