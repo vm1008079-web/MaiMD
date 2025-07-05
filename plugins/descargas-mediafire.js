@@ -43,12 +43,14 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     }
 
     const infoMsg = `
-> ✦ *Título:* ${title}
-> ✧ *Canal:* ${vid.author.name}
-> ❀ *Duración:* ${vid.timestamp}
-> ✧ *Vistas:* ${vid.views.toLocaleString()}
-> ❀ *Publicado:* ${vid.ago}
-> ✦ *Link:* ${vid.url}
+> ☄︎ *Título :* ${title}
+> ✎ *Canal :* ${vid.author.name}
+> ❀ *Duración :* ${vid.timestamp}
+> ✧ *Vistas :* ${vid.views.toLocaleString()}
+> ☁︎ *Publicado :* ${vid.ago}
+> ✦ *Link :* ${vid.url}
+
+> ✐ *Servidor :* Adonix
 `.trim()
 
     await conn.reply(m.chat, infoMsg, m, { contextInfo })
@@ -69,6 +71,6 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 
 handler.help = ['play <nombre>']
 handler.tags = ['downloader']
-handler.command = ['play', 'yta', 'ytmp3', 'playaudio']
+handler.command = ['play', 'playaudio']
 
 export default handler
