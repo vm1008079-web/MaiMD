@@ -61,11 +61,11 @@ let handler = async (m, { conn }) => {
             ? `Reclamado por @${randomCharacter.user.split('@')[0]}` 
             : 'Libre'
 
-        const message = `❀ Nombre » *${randomCharacter.name}*
-⚥ Género » *${randomCharacter.gender}*
-✰ Valor » *${randomCharacter.value}*
-♡ Estado » ${statusMessage}
-❖ Fuente » *${randomCharacter.source}*
+        const message = `☄︎ Nombre *»* *${randomCharacter.name}*
+ᥫ᭡ Género *»* *${randomCharacter.gender}*
+✰ Valor *»* *${randomCharacter.value}*
+ᰔᩚ Estado *»* ${statusMessage}
+✿ Fuente *»* *${randomCharacter.source}*
 ✦ ID: *${randomCharacter.id}*`
 
         const mentions = userEntry ? [userEntry.userId] : []
@@ -75,7 +75,7 @@ let handler = async (m, { conn }) => {
             await saveCharacters(characters)
         }
 
-        cooldowns[userId] = now + 15 * 60 * 1000
+        //cooldowns[userId] = now + 15 * 60 * 1000
 
     } catch (error) {
         await conn.reply(m.chat, `✘ Error al cargar el personaje: ${error.message}`, m)
