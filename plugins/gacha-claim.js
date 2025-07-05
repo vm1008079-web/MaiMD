@@ -81,7 +81,7 @@ let handler = async (m, { conn }) => {
     await saveCharacters(characters);
     await saveHarem(harem);
 
-    //cooldowns[userId] = now + 30 * 60 * 1000;
+    cooldowns[userId] = now + 30 * 60 * 1000;
 
     await conn.reply(m.chat, `✦ Has reclamado a *${character.name}* con éxito.`, m);
 
