@@ -3,10 +3,10 @@ import ytSearch from 'yt-search'
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) {
-    return m.reply(`📽️ Escribe el nombre del video o link\n\nEj: *${usedPrefix + command} Messi goles*`)
+    return m.reply(`> Escribe el nombre del video o link\n\nEj: *${usedPrefix + command} Messi goles*`)
   }
 
-  await conn.sendMessage(m.chat, { react: { text: '📥', key: m.key } })
+  await conn.sendMessage(m.chat, { react: { text: '🕒', key: m.key } })
 
   try {
     let videoUrl = ''
@@ -29,7 +29,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     const res = await fetch(api)
     const json = await res.json()
 
-    if (!json?.result?.video) return m.reply('❌ No se pudo obtener el video')
+    if (!json?.result?.video) return m.reply('No se pudo obtener el video')
 
     const videoDl = json.result.video
     title = json.result.title || 'Sin título'
