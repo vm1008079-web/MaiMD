@@ -1,5 +1,6 @@
 import fetch from "node-fetch"
 import yts from "yt-search"
+import axios from "axios"
 
 const youtubeRegexID = /(?:youtu\.be\/|youtube\.com\/(?:watch\?v=|embed\/))([a-zA-Z0-9_-]{11})/
 
@@ -45,7 +46,7 @@ const handler = async (m, { conn, text, command }) => {
 > ✐ *Publicado :* ${ago}
 > ☁︎ *Link :* ${url}`
 
-    // Obtener buffer de la miniatura para contextInfo
+    // Obtener buffer de miniatura para mostrar en el mensaje
     let thumbData = null
     try {
       thumbData = (await conn.getFile(thumbnail)).data
@@ -62,7 +63,7 @@ const handler = async (m, { conn, text, command }) => {
         mediaUrl: url,
         sourceUrl: url,
         thumbnail: thumbData,
-        renderLargerThumbnail: true,
+        renderLargerThumbnail: true
       }
     }
 
@@ -77,9 +78,13 @@ const handler = async (m, { conn, text, command }) => {
 
         if (!audioUrl) throw new Error('No se generó enlace de audio')
 
+        const { data: audioBuffer } = await axios.get(audioUrl, {
+          responseType: 'arraybuffer'
+        })
+
         await conn.sendFile(
           m.chat,
-          audioUrl,
+          audioBuffer,
           `${audioTitle}.mp3`,
           null,
           m,
@@ -113,7 +118,7 @@ const handler = async (m, { conn, text, command }) => {
   }
 }
 
-handler.command = handler.help = ['play', 'yta', 'ytmp3', 'play2', 'ytv', 'ytmp4', 'playaudio', 'mp4']
+handler.command = handler.help = ['yta', 'ytmp3', 'play2', 'ytv', 'ytmp4', 'playaudio', 'mp4']
 handler.tags = ['descargas']
 
 export default handler
