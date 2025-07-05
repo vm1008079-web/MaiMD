@@ -5,18 +5,16 @@ var handler = async (m, { conn, args }) => {
   const participants = groupMetadata.participants || []
 
   const senderJid = m.sender
-  const senderLid = m.participant || m.key?.participant // 🧠 aquí está el lid real
 
-  const participant = participants.find(p =>
-    p.id === senderJid || p.lid === senderLid
-  )
+  // ✅ Buscar por .jid, no por .id o .lid
+  const participant = participants.find(p => p.jid === senderJid)
 
-  // 🔎 Debug por si no lo encuentra
   if (!participant) {
-    console.log('🧪 PARTICIPANTS:', participants)
-    console.log('🧪 m.sender:', senderJid)
-    console.log('🧪 m.participant / lid:', senderLid)
-    return m.reply('☁︎✐ No se encontró tu info en el grupo. ¿Tu número está privado? 🥷')
+    console.log('❌ No se encontró al sender. DEBUG:', {
+      sender: senderJid,
+      participants: participants.map(p => p.jid)
+    })
+    return m.reply('☁︎✐ No se encontró tu info en el grupo (jid no coincidente).')
   }
 
   const isAdmin = participant.admin === 'admin' || participant.admin === 'superadmin'
@@ -60,5 +58,6 @@ handler.help = ['kick']
 handler.tags = ['group']
 handler.command = ['kick','echar','hechar','sacar','ban']
 handler.group = true
+
 
 export default handler
