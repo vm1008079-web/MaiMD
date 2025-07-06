@@ -1,4 +1,4 @@
-//Usando adonix api.
+// code by github.com/Ado-rgb
 import ytSearch from 'yt-search'
 import fetch from 'node-fetch'
 
@@ -23,6 +23,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     const duration = vid.timestamp || 'Desconocida'
     const thumbnail = vid.thumbnail || ''
 
+    
     let thumbData = null
     try {
       thumbData = (await conn.getFile(thumbnail))?.data
@@ -30,33 +31,46 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       thumbData = null
     }
 
-    const contextInfo = {
-      externalAdReply: {
-        title,
-        body: `Duración: ${duration}`,
-        mediaType: 1,
-        previewType: 0,
-        mediaUrl: vid.url,
-        sourceUrl: vid.url,
-        thumbnail: thumbData,
-        renderLargerThumbnail: true,
-      }
-    }
-
+    // Info detalles ps 
     const infoMsg = `
 ✦  *${title}*
 ✧  Duración: *${duration}*
-${vid.url}
-`.trim()
+${vid.url}`.trim()
 
-    await conn.reply(m.chat, infoMsg, m, { contextInfo })
+    const idcanal = global.idcanal || '123456789@newsletter'
+    const namecanal = global.namecanal || 'Canal Oficial'
 
+    
+    await conn.sendMessage(m.chat, {
+      image: thumbData,
+      caption: infoMsg,
+      contextInfo: {
+        isForwarded: true,
+        forwardingScore: 200,
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: idcanal,
+          serverMessageId: 100,
+          newsletterName: namecanal
+        }
+      }
+    }, { quoted: m })
+
+    
     await conn.sendMessage(
       m.chat,
       {
         audio: { url: audioUrl },
         mimetype: 'audio/mpeg',
         ptt: true,
+        contextInfo: {
+          isForwarded: true,
+          forwardingScore: 200,
+          forwardedNewsletterMessageInfo: {
+            newsletterJid: idcanal,
+            serverMessageId: 100,
+            newsletterName: namecanal
+          }
+        }
       },
       { quoted: m }
     )
