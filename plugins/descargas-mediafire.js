@@ -1,9 +1,9 @@
-//Usando adonix api. 
+//Usando adonix api.
 import ytSearch from 'yt-search'
 import fetch from 'node-fetch'
 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
-  if (!text) return m.reply(`> ☄︎ Pon el nombre o enlace de la canción\nEj: *${usedPrefix + command} perreando machin*`)
+  if (!text) return m.reply(`> ☄︎ Pon el nombre o enlace de la canción\n\n📌 Ej: *${usedPrefix + command} perreando machin*`)
 
   await conn.sendMessage(m.chat, { react: { text: '🕒', key: m.key } })
 
@@ -19,7 +19,8 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     if (!json?.result?.audio) return m.reply('⌦ No se pudo obtener el audio')
 
     const audioUrl = json.result.audio
-    const title = json.result.title || vid.title
+    const title = vid.title
+    const duration = vid.timestamp || 'Desconocida'
     const thumbnail = vid.thumbnail || ''
 
     let thumbData = null
@@ -32,7 +33,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     const contextInfo = {
       externalAdReply: {
         title,
-        body: vid.ago,
+        body: `Duración: ${duration}`,
         mediaType: 1,
         previewType: 0,
         mediaUrl: vid.url,
@@ -43,14 +44,9 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     }
 
     const infoMsg = `
-> ☄︎ *Título :* ${title}
-> ✎ *Canal :* ${vid.author.name}
-> ❀ *Duración :* ${vid.timestamp}
-> ✧ *Vistas :* ${vid.views.toLocaleString()}
-> ☁︎ *Publicado :* ${vid.ago}
-> ✦ *Link :* ${vid.url}
-
-> ✐ *Servidor :* Adonix
+✦  *${title}*
+✧  Duración: *${duration}*
+${vid.url}
 `.trim()
 
     await conn.reply(m.chat, infoMsg, m, { contextInfo })
@@ -60,11 +56,12 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       {
         audio: { url: audioUrl },
         mimetype: 'audio/mpeg',
-        ptt: true
+        ptt: true,
       },
       { quoted: m }
     )
   } catch (e) {
+    console.error(e)
     return m.reply('⚠️ Error al obtener la canción, intenta luego')
   }
 }
