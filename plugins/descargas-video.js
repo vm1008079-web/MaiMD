@@ -61,13 +61,26 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 ✧  Duración: *${duration}*
 ${videoUrl}`.trim()
 
-    // Enviar miniatura con info
+    // Datos del canal
+    const idcanal = global.idcanal || '123456789@newsletter'
+    const namecanal = global.namecanal || 'Canal Oficial'
+
+    // Enviar miniatura con detalles como reenviado
     await conn.sendMessage(m.chat, {
       image: thumbBuffer,
       caption: infoMsg,
+      contextInfo: {
+        isForwarded: true,
+        forwardingScore: 200,
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: idcanal,
+          serverMessageId: 100,
+          newsletterName: namecanal
+        }
+      }
     }, { quoted: m })
 
-    // Enviar video como reenviado de canal
+    // Enviar video también como reenviado del canal
     await conn.sendMessage(m.chat, {
       video: { url: videoDl },
       mimetype: 'video/mp4',
@@ -76,9 +89,9 @@ ${videoUrl}`.trim()
         isForwarded: true,
         forwardingScore: 200,
         forwardedNewsletterMessageInfo: {
-          newsletterJid: global.idcanal || '123456789@newsletter',
+          newsletterJid: idcanal,
           serverMessageId: 100,
-          newsletterName: global.namecanal || 'Canal Oficial'
+          newsletterName: namecanal
         }
       }
     }, { quoted: m })
