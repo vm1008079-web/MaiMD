@@ -26,7 +26,10 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     const esVoz = /(háblame|hablame|en audio|dímelo en voz|responde con voz|responde en audio|en nota de voz|dilo con voz)/i.test(text);
 
     if (esVoz && data.respuesta) {
-      const vozURL = `https://apis-starlights-team.koyeb.app/starlight/loquendo?text=${encodeURIComponent(data.respuesta)}&voice=Juan`;
+      // ✂️ Limitar texto para evitar ENAMETOOLONG
+      const textoVoz = data.respuesta.trim().slice(0, 500); // máximo 500 caracteres
+
+      const vozURL = `https://apis-starlights-team.koyeb.app/starlight/loquendo?text=${encodeURIComponent(textoVoz)}&voice=Juan`;
       const audioRes = await fetch(vozURL);
       const audioData = await audioRes.json();
 
