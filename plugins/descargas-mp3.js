@@ -223,7 +223,7 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
   await conn.sendMessage(m.chat, {
     audio: { url: res.result.download },
     mimetype: 'audio/mpeg',
-    ptt: false
+    ptt: true
   }, { quoted: m })
 }
 
