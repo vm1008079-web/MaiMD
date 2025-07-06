@@ -1,82 +1,53 @@
 import fetch from 'node-fetch';
 
-const handler = async (m, { conn, text, usedPrefix, command }) => {
+let handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) {
-    return m.reply(`🌵 *Adonix IA:*\n\nEscribí algo maje...\nEjemplo:\n${usedPrefix + command} dime un chiste`);
+    return m.reply(`🤖 *Adonix IA* 🤖\n\nUsa:\n${usedPrefix + command} [tu pregunta]\n\nEjemplo:\n${usedPrefix + command} haz un código JS que sume dos números`);
   }
 
-  await m.react('🧠');
-
   try {
+    await m.react('🕒');
+
     const apiURL = `https://theadonix-api.vercel.app/api/adonix?q=${encodeURIComponent(text)}`;
     const res = await fetch(apiURL);
     const data = await res.json();
 
-    console.log('[🧠 RES DATA]', data); // DEBUG 🔍
-
-    // 🔊 AUDIO BASE64
-    if (data.audio_base64) {
-      try {
-        const audioBuffer = Buffer.from(data.audio_base64, 'base64');
-
-        // Verifica tamaño
-        console.log('🔊 Tamaño del buffer:', audioBuffer.length, 'bytes');
-
-        if (audioBuffer.length < 10000) throw new Error('⚠️ Audio demasiado pequeño o corrupto');
-
-        await conn.sendMessage(m.chat, {
-          audio: audioBuffer,
-          mimetype: 'audio/mpeg',
-          ptt: true
-        }, { quoted: m });
-
-        await m.react('✅');
-        return;
-
-      } catch (err) {
-        console.error('[❌ ERROR AL PROCESAR AUDIO]', err);
-        await m.reply('❌ No se pudo enviar el audio. Tal vez está corrupto o mal formado.');
-        await m.react('❌');
-        return;
-      }
-    }
-
-    // 🖼️ IMAGEN
-    if (data.imagen_generada || data.result?.image) {
-      const imgUrl = data.imagen_generada || data.result.image;
+    // Si devuelve imagen
+    if (data.imagen_generada) {
       await conn.sendMessage(m.chat, {
-        image: { url: imgUrl },
-        caption: `🖼️ *Adonix IA generó esta imagen:*\n\n🗯️ *Pregunta:* ${data.pregunta || text}\n\n📌 ${data.mensaje || 'Aquí está tu imagen perrito'}`,
+        image: { url: data.imagen_generada },
+        caption: `🖼️ *Adonix IA* generó esta imagen:\n\n📌 _${data.pregunta}_\n${data.mensaje || ''}`,
       }, { quoted: m });
       await m.react('✅');
       return;
     }
 
-    // 💬 TEXTO
+    // Si devuelve respuesta tipo texto
     if (data.respuesta && typeof data.respuesta === 'string') {
-      const [mensaje, ...codigo] = data.respuesta.split(/```(?:javascript|js|html)?/i);
-      let textoFinal = `🌵 *Adonix IA:*\n\n${mensaje.trim()}`;
+      const [mensaje, ...codigo] = data.respuesta.split(/```(?:javascript|js|html|)/i);
+      let respuestaFinal = `🌵 *Adonix IA :*\n\n${mensaje.trim()}`;
 
-      if (codigo.length) {
-        textoFinal += `\n\n💻 *Código:*\n\`\`\`js\n${codigo.join('```').trim().slice(0, 3900)}\n\`\`\``;
+      if (codigo.length > 0) {
+        respuestaFinal += `\n\n💻 *Código:*\n\`\`\`js\n${codigo.join('```').trim().slice(0, 3900)}\n\`\`\``;
       }
 
-      await m.reply(textoFinal);
+      await m.reply(respuestaFinal);
       await m.react('✅');
       return;
     }
 
+    // Si no trae ni imagen ni texto válido
     await m.react('❌');
-    return m.reply('❌ No se supo qué mandar 🤷‍♂️');
+    return m.reply('❌ No se pudo procesar la respuesta de Adonix IA.');
 
   } catch (e) {
-    console.error('[❌ ERROR GENERAL ADONIX IA]', e);
+    console.error('[ERROR ADONIX IA]', e);
     await m.react('❌');
-    return m.reply(`❌ Error usando Adonix IA:\n\n${e.message}`);
+    return m.reply(`❌ Error al usar Adonix IA:\n\n${e.message}`);
   }
 };
 
-handler.help = ['adonix <texto>'];
+handler.help = ['adonix <pregunta>'];
 handler.tags = ['ia'];
 handler.command = ['adonix', 'ai', 'adonixia'];
 
