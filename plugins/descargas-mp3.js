@@ -207,7 +207,7 @@ const ogmp3 = {
 
 let handler = async (m, { conn, text, command, usedPrefix }) => {
   if (!text) {
-    return m.reply(`🎧 Escribe el nombre de una canción\n\n📌 Ej: *${usedPrefix + command} Montagem Psycho*`)
+    return m.reply(`*¿Y el name de la rola we?* \nSin eso no jalo ni con fe XD\n\n📌 Probá así:\n*${usedPrefix + command} Dame más gasolina*`)
   }
 
   await conn.sendMessage(m.chat, { react: { text: '🔥', key: m.key } })
