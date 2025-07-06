@@ -29,8 +29,6 @@ const ogmp3 = {
     audio: '320'
   },
 
-  restrictedTimezones: new Set(["-330", "-420", "-480", "-540"]),
-
   utils: {
     hash: () => {
       const array = new Uint8Array(16)
@@ -207,17 +205,14 @@ const ogmp3 = {
   }
 }
 
-let handler = async (m, { conn }) => {
-  const body = m.text || ''
-  const match = body.match(/^(audio|Audio)\s+(.+)/i)
-  if (!match) return
-
-  const query = match[2]?.trim()
-  if (!query) return m.reply(`🎧 Escribe el nombre de una canción\n\n📌 Ej: *audio Montagem Psycho*`)
+let handler = async (m, { conn, text, command, usedPrefix }) => {
+  if (!text) {
+    return m.reply(`🎧 Escribe el nombre de una canción\n\n📌 Ej: *${usedPrefix + command} Montagem Psycho*`)
+  }
 
   await conn.sendMessage(m.chat, { react: { text: '🔥', key: m.key } })
 
-  let search = await ytSearch(query)
+  let search = await ytSearch(text)
   let vid = search.videos[0]
 
   if (!vid) return m.reply('😿 No encontré nada we intenta con otro nombre')
@@ -232,8 +227,7 @@ let handler = async (m, { conn }) => {
   }, { quoted: m })
 }
 
-handler.customPrefix = /^audio\s+/i
-handler.command = () => true
+handler.command = ['audio']
 handler.help = ['audio <nombre>']
 handler.tags = ['downloader']
 
