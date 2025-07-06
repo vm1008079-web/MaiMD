@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) {
-    return m.reply(`🌵 *Adonix IA:*\n\nEscribí algo we\nEjemplo:\n${usedPrefix + command} dime un chiste`);
+    return m.reply(`🌵 *Adonix IA:*\n\nEscribí algo maje...\nEjemplo:\n${usedPrefix + command} dime un chiste`);
   }
 
   await m.react('🧠');
@@ -10,23 +10,35 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   try {
     const apiURL = `https://theadonix-api.vercel.app/api/adonix?q=${encodeURIComponent(text)}`;
     const res = await fetch(apiURL);
-    const contentType = res.headers.get('content-type') || '';
-
     const data = await res.json();
-    console.log('[🧠 API RESPONSE]', data);
+
+    console.log('[🧠 RES DATA]', data); // DEBUG 🔍
 
     // 🔊 AUDIO BASE64
     if (data.audio_base64) {
-      const audioBuffer = Buffer.from(data.audio_base64, 'base64');
+      try {
+        const audioBuffer = Buffer.from(data.audio_base64, 'base64');
 
-      await conn.sendMessage(m.chat, {
-        audio: audioBuffer,
-        mimetype: 'audio/mpeg',
-        ptt: true
-      }, { quoted: m });
+        // Verifica tamaño
+        console.log('🔊 Tamaño del buffer:', audioBuffer.length, 'bytes');
 
-      await m.react('✅');
-      return;
+        if (audioBuffer.length < 10000) throw new Error('⚠️ Audio demasiado pequeño o corrupto');
+
+        await conn.sendMessage(m.chat, {
+          audio: audioBuffer,
+          mimetype: 'audio/mpeg',
+          ptt: true
+        }, { quoted: m });
+
+        await m.react('✅');
+        return;
+
+      } catch (err) {
+        console.error('[❌ ERROR AL PROCESAR AUDIO]', err);
+        await m.reply('❌ No se pudo enviar el audio. Tal vez está corrupto o mal formado.');
+        await m.react('❌');
+        return;
+      }
     }
 
     // 🖼️ IMAGEN
@@ -54,12 +66,11 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       return;
     }
 
-    // Si nada cuadra...
     await m.react('❌');
-    return m.reply('❌ No entendí qué devolver... 😿');
+    return m.reply('❌ No se supo qué mandar 🤷‍♂️');
 
   } catch (e) {
-    console.error('[❌ ERROR ADONIX IA]', e);
+    console.error('[❌ ERROR GENERAL ADONIX IA]', e);
     await m.react('❌');
     return m.reply(`❌ Error usando Adonix IA:\n\n${e.message}`);
   }
