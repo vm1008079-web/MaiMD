@@ -208,9 +208,9 @@ const ogmp3 = {
 }
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
-  if (!text) return m.reply(`🎧 Escribe el nombre de una canción\n\n📌 Ej: *${usedPrefix + command} Peso pluma bellakeo*`)
+  if (!text) return m.reply(`🎧 Escribe el nombre de una canción\n\n📌 Ej: *${usedPrefix + command} Montagem Psycho*`)
 
-  await conn.sendMessage(m.chat, { react: { text: '🎶', key: m.key } })
+  await conn.sendMessage(m.chat, { react: { text: '🔥', key: m.key } })
 
   let search = await ytSearch(text)
   let vid = search.videos[0]
@@ -227,8 +227,9 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   }, { quoted: m })
 }
 
-handler.help = ['play <nombre>']
+handler.customPrefix = /^(audio|Audio)$/i;
+handler.command = new RegExp;
+handler.help = ['pls <nombre>']
 handler.tags = ['downloader']
-handler.command = ['pls']
 
 export default handler
