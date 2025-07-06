@@ -207,8 +207,8 @@ const ogmp3 = {
   }
 }
 
-let handler = async (m, { conn, text, usedPrefix, command }) => {
-  if (!text) return m.reply(`🎧 Escribe el nombre de una canción\n\n📌 Ej: *${usedPrefix + command} Montagem Psycho*`)
+let handler = async (m, { conn, text }) => {
+  if (!text) return m.reply(`🎧 Escribe el nombre de una canción\n\n📌 Ej: *audio Montagem Psycho*`)
 
   await conn.sendMessage(m.chat, { react: { text: '🔥', key: m.key } })
 
@@ -227,9 +227,9 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   }, { quoted: m })
 }
 
-handler.customPrefix = /^(audio|Audio)$/i;
-handler.command = new RegExp;
-handler.help = ['pls <nombre>']
+handler.customPrefix = /^(audio|Audio)\s/i
+handler.command = () => true
+handler.help = ['audio <nombre>']
 handler.tags = ['downloader']
 
 export default handler
