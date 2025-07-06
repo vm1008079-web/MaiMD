@@ -3,7 +3,7 @@ import ytSearch from 'yt-search'
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) {
-    return m.reply(`> Escribe el nombre del video o link\n\n📌 Ej: *${usedPrefix + command} Messi goles*`)
+    return m.reply(`> ☄︎ Pon el nombre o enlace del video\n\n📌 Ej: *${usedPrefix + command} Messi goles*`)
   }
 
   await conn.sendMessage(m.chat, { react: { text: '🕒', key: m.key } })
@@ -12,23 +12,23 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     let videoUrl = ''
     let videoInfo = null
 
-    // Si es link directo
+    // Buscar info con yt-search
     if (/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//.test(text)) {
       let search = await ytSearch({ query: text, pages: 1 })
       videoInfo = search.videos.find(v => v.url.includes('watch')) || search.videos[0]
       if (!videoInfo) return m.reply('😿 No encontré detalles del video')
       videoUrl = videoInfo.url
     } else {
-      // Si es búsqueda
       let search = await ytSearch(text)
       if (!search.videos.length) return m.reply('😿 No encontré nada')
       videoInfo = search.videos[0]
       videoUrl = videoInfo.url
     }
 
-    const { title, thumbnail } = videoInfo
+    const { title, thumbnail, timestamp } = videoInfo
+    const duration = timestamp || 'Desconocida'
 
-    // Usar API para descargar el video
+    // Descargar el video desde la API
     const api = `https://theadonix-api.vercel.app/api/ytmp4?url=${encodeURIComponent(videoUrl)}`
     const res = await fetch(api)
     const json = await res.json()
@@ -55,22 +55,32 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       return m.reply('💥 Error: El video está dañado o no se pudo obtener correctamente')
     }
 
-    // Mensaje decorado con detalles de yt-search
+    // Mensaje decorado
     const infoMsg = `
 ✦  *${title}*
-✧  Calidad: *${quality}p*
+✧  Duración: *${duration}*
 ${videoUrl}`.trim()
 
-    // Enviar info
+    // Enviar miniatura con info
     await conn.sendMessage(m.chat, {
       image: thumbBuffer,
       caption: infoMsg,
     }, { quoted: m })
 
-    // Enviar video
+    // Enviar video como reenviado de canal
     await conn.sendMessage(m.chat, {
       video: { url: videoDl },
       mimetype: 'video/mp4',
+      caption: '',
+      contextInfo: {
+        isForwarded: true,
+        forwardingScore: 200,
+        forwardedNewsletterMessageInfo: {
+          newsletterJid: global.idcanal || '123456789@newsletter',
+          serverMessageId: 100,
+          newsletterName: global.namecanal || 'Canal Oficial'
+        }
+      }
     }, { quoted: m })
 
   } catch (e) {
