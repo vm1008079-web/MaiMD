@@ -11,7 +11,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   await m.react('🧠');
 
   try {
-    const apiURL = `https://tu-dominio-o-hosting/api/adonix?q=${encodeURIComponent(text)}`;
+    const apiURL = `https://theadonix-api.vercel.app/api/adonix?q=${encodeURIComponent(text)}`;
     const res = await fetch(apiURL);
 
     // Si responde audio (content-type: audio/mpeg)
