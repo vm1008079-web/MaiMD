@@ -61,7 +61,7 @@ ${vid.url}`.trim()
       {
         audio: { url: audioUrl },
         mimetype: 'audio/mpeg',
-        ptt: true,
+        ptt: false,
         contextInfo: {
           isForwarded: true,
           forwardingScore: 200,
