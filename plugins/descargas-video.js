@@ -1,3 +1,4 @@
+// code by github.com/Ado-rgb
 import fetch from 'node-fetch'
 import ytSearch from 'yt-search'
 
@@ -12,7 +13,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     let videoUrl = ''
     let videoInfo = null
 
-    // Buscar info con yt-search
+    
     if (/^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\//.test(text)) {
       let search = await ytSearch({ query: text, pages: 1 })
       videoInfo = search.videos.find(v => v.url.includes('watch')) || search.videos[0]
@@ -28,7 +29,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     const { title, thumbnail, timestamp } = videoInfo
     const duration = timestamp || 'Desconocida'
 
-    // Descargar el video desde la API
+    
     const api = `https://theadonix-api.vercel.app/api/ytmp4?url=${encodeURIComponent(videoUrl)}`
     const res = await fetch(api)
     const json = await res.json()
@@ -38,7 +39,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     const videoDl = json.result.video
     const quality = json.result.quality || 'Desconocida'
 
-    // Miniatura
+    
     let thumbBuffer
     try {
       thumbBuffer = (await conn.getFile(thumbnail))?.data
@@ -46,7 +47,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       thumbBuffer = null
     }
 
-    // Verificar archivo
+    
     let fileData
     try {
       fileData = await conn.getFile(videoDl)
@@ -55,17 +56,17 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
       return m.reply('💥 Error: El video está dañado o no se pudo obtener correctamente')
     }
 
-    // Mensaje decorado
+    
     const infoMsg = `
 ✦  *${title}*
 ✧  Duración: *${duration}*
 ${videoUrl}`.trim()
 
-    // Datos del canal
+    
     const idcanal = global.idcanal || '123456789@newsletter'
     const namecanal = global.namecanal || 'Canal Oficial'
 
-    // Enviar miniatura con detalles como reenviado
+    
     await conn.sendMessage(m.chat, {
       image: thumbBuffer,
       caption: infoMsg,
@@ -80,7 +81,7 @@ ${videoUrl}`.trim()
       }
     }, { quoted: m })
 
-    // Enviar video también como reenviado del canal
+    
     await conn.sendMessage(m.chat, {
       video: { url: videoDl },
       mimetype: 'video/mp4',
