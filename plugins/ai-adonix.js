@@ -11,14 +11,12 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     const apiURL = `https://theadonix-api.vercel.app/api/adonix?q=${encodeURIComponent(text)}`;
     const res = await fetch(apiURL);
 
-    // Si el API responde con audio
     if (res.headers.get('content-type')?.includes('audio/mpeg')) {
-      // Mandamos audio directo en mensaje de voz
-      const bufferAudio = await res.arrayBuffer();
-      const audioBuffer = Buffer.from(bufferAudio);
+      const bufferAudio = Buffer.from(await res.arrayBuffer());
 
       await conn.sendMessage(m.chat, {
-        audio: audioBuffer,
+        audio: bufferAudio,
+        mimetype: 'audio/mpeg',
         ptt: true
       }, { quoted: m });
 
@@ -26,10 +24,8 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       return;
     }
 
-    // Si responde JSON (texto, imagen, error)
     const data = await res.json();
 
-    // Si responde con imagen generada
     if (data.imagen_generada) {
       await conn.sendMessage(m.chat, {
         image: { url: data.imagen_generada },
@@ -39,7 +35,6 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       return;
     }
 
-    // Si responde texto normal
     if (data.respuesta && typeof data.respuesta === 'string') {
       const [mensaje, ...codigo] = data.respuesta.split(/```(?:javascript|js|html)?/i);
       let respuestaFinal = `🌵 *Adonix IA:*\n\n${mensaje.trim()}`;
@@ -53,7 +48,6 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       return;
     }
 
-    // Si no hay nada válido
     await m.react('❌');
     return m.reply('❌ No se pudo procesar la respuesta de Adonix IA.');
 
