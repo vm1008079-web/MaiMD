@@ -1,4 +1,7 @@
 import fetch from 'node-fetch';
+import path from 'path';
+import { tmpdir } from 'os';
+import { createReadStream } from 'fs';
 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) {
@@ -8,8 +11,21 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   await m.react('🧠');
 
   try {
-    const apiURL = `https://theadonix-api.vercel.app/api/adonix?q=${encodeURIComponent(text)}`;
+    const apiURL = `https://tu-dominio-o-hosting/api/adonix?q=${encodeURIComponent(text)}`;
     const res = await fetch(apiURL);
+
+    // Si responde audio (content-type: audio/mpeg)
+    if (res.headers.get('content-type')?.includes('audio/mpeg')) {
+      const audioBuffer = Buffer.from(await res.arrayBuffer());
+      await conn.sendMessage(m.chat, {
+        audio: audioBuffer,
+        ptt: true
+      }, { quoted: m });
+      await m.react('✅');
+      return;
+    }
+
+    // Si responde JSON
     const data = await res.json();
 
     // 🖼️ Imagen generada
@@ -20,27 +36,6 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       }, { quoted: m });
       await m.react('✅');
       return;
-    }
-
-    // 🗣️ Si pidieron que hable (voz)
-    const esVoz = /(háblame|hablame|en audio|dímelo en voz|responde con voz|responde en audio|en nota de voz|dilo con voz)/i.test(text);
-
-    if (esVoz && data.respuesta) {
-      // ✂️ Limitar texto para evitar ENAMETOOLONG
-      const textoVoz = data.respuesta.trim().slice(0, 500); // máximo 500 caracteres
-
-      const vozURL = `https://apis-starlights-team.koyeb.app/starlight/loquendo?text=${encodeURIComponent(textoVoz)}&voice=Juan`;
-      const audioRes = await fetch(vozURL);
-      const audioData = await audioRes.json();
-
-      if (audioData?.audio) {
-        await conn.sendMessage(m.chat, {
-          audio: { url: audioData.audio },
-          ptt: true
-        }, { quoted: m });
-        await m.react('✅');
-        return;
-      }
     }
 
     // 💬 Respuesta normal (texto y código)
