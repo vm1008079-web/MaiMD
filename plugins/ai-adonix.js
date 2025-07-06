@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) {
-    return m.reply(`🌵 *Adonix IA:*\n\n¿Qué pex? Escribe algo we...\nEjemplo:\n${usedPrefix + command} dime un chiste`);
+    return m.reply(`🌵 *Adonix IA:*\n\nEscribí algo we\nEjemplo:\n${usedPrefix + command} dime un chiste`);
   }
 
   await m.react('🧠');
@@ -12,55 +12,51 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     const res = await fetch(apiURL);
     const contentType = res.headers.get('content-type') || '';
 
-    console.log('[🧠 API STATUS]', res.status);
-    console.log('[🧠 API CONTENT-TYPE]', contentType);
-
-    if (!res.ok) throw new Error(`API respondio con status ${res.status}`);
-
-    // Parseamos JSON
     const data = await res.json();
-    console.log('[🧠 API RESPONSE JSON]', data);
+    console.log('[🧠 API RESPONSE]', data);
 
-    // 🔊 Audio base64
+    // 🔊 AUDIO BASE64
     if (data.audio_base64) {
       const audioBuffer = Buffer.from(data.audio_base64, 'base64');
+
       await conn.sendMessage(m.chat, {
         audio: audioBuffer,
         mimetype: 'audio/mpeg',
         ptt: true
       }, { quoted: m });
+
       await m.react('✅');
       return;
     }
 
-    // 🖼️ Imagen generada
+    // 🖼️ IMAGEN
     if (data.imagen_generada || data.result?.image) {
       const imgUrl = data.imagen_generada || data.result.image;
       await conn.sendMessage(m.chat, {
         image: { url: imgUrl },
-        caption: `🖼️ *Adonix IA generó esta imagen:*\n\n🗯️ *Pregunta:* ${data.pregunta || text}\n\n📌 ${data.mensaje || 'Aquí está tu imagen, perro'}`,
+        caption: `🖼️ *Adonix IA generó esta imagen:*\n\n🗯️ *Pregunta:* ${data.pregunta || text}\n\n📌 ${data.mensaje || 'Aquí está tu imagen perrito'}`,
       }, { quoted: m });
       await m.react('✅');
       return;
     }
 
-    // 📄 Texto o código
+    // 💬 TEXTO
     if (data.respuesta && typeof data.respuesta === 'string') {
       const [mensaje, ...codigo] = data.respuesta.split(/```(?:javascript|js|html)?/i);
-      let resp = `🌵 *Adonix IA:*\n\n${mensaje.trim()}`;
+      let textoFinal = `🌵 *Adonix IA:*\n\n${mensaje.trim()}`;
 
       if (codigo.length) {
-        resp += `\n\n💻 *Código:*\n\`\`\`js\n${codigo.join('```').trim().slice(0, 3900)}\n\`\`\``;
+        textoFinal += `\n\n💻 *Código:*\n\`\`\`js\n${codigo.join('```').trim().slice(0, 3900)}\n\`\`\``;
       }
 
-      await m.reply(resp);
+      await m.reply(textoFinal);
       await m.react('✅');
       return;
     }
 
-    // 😵 Si nada funcionó
+    // Si nada cuadra...
     await m.react('❌');
-    return m.reply('❌ Adonix IA no me devolvió nada entendible, we...');
+    return m.reply('❌ No entendí qué devolver... 😿');
 
   } catch (e) {
     console.error('[❌ ERROR ADONIX IA]', e);
@@ -69,7 +65,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   }
 };
 
-handler.help = ['adonix <pregunta>'];
+handler.help = ['adonix <texto>'];
 handler.tags = ['ia'];
 handler.command = ['adonix', 'ai', 'adonixia'];
 
