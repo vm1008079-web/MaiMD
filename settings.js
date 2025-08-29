@@ -18,7 +18,6 @@ global.botNumber = '' //Ejemplo: 573218138672
 global.owner = [
 // <-- Número @s.whatsapp.net -->
   ['5356795360', '🜲 Propietario 🜲', true],
-  ['573133374132'],
   
 // <-- Número @lid -->
   ['156981591593126', 'Wirk', true],
@@ -45,15 +44,15 @@ global.yukiJadibts = true
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
-global.packname = '☁︎ Mai ☁︎'
-global.botname = '✿ Mai ✧'
-global.wm = '❀ Mai Bot ❀'
-global.author = '© Made with ☁︎ Wirk ✧'
-global.dev = '☄︎ Hecho por ☁︎ Wirk ✦'
-global.textbot = '✎ Mai - By ☁︎ Wirk ✿'
-global.etiqueta = 'ⁱᵃᵐ|☁︎Wirk☁︎'
-global.namecanal = 'ᰔᩚ Mai Channel • Updates ᰔᩚ'
-global.idcanal = '120363403739366547@newsletter'
+global.packname = '☁︎ Astra ☁︎'
+global.botname = '✿ Astra ✧'
+global.wm = '❀ Astra Bot ❀'
+global.author = '© Made with ☁︎ Omega ✧'
+global.dev = '☄︎ Hecho por ☁︎ Omega ✦'
+global.textbot = '✎ Mai - By ☁︎ Omega ✿'
+global.etiqueta = 'ⁱᵃᵐ|☁︎Omega☁︎'
+global.namecanal = 'ᰔᩚ Astra Channel • Updates ᰔᩚ'
+global.idcanal = ''
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
 global.moneda = '𝖬𝖺𝗂𝗆𝗂𝖢𝗈𝗂𝗇𝗌 ✿'
