@@ -59,8 +59,8 @@ global.idcanal = '120363403739366547@newsletter'
 global.moneda = '𝖬𝖺𝗂𝗆𝗂𝖢𝗈𝗂𝗇𝗌 ✿'
 global.welcom1 = '✧ Edita Con El Comando setwelcome'
 global.welcom2 = '✧ Edita Con El Comando setbye'
-global.banner = 'https://files.catbox.moe/46hsh4.jpg'
-global.avatar = 'https://files.catbox.moe/8qt6p9.jpg'
+global.banner = 'https://files.catbox.moe/3192ay.jpg'
+global.avatar = 'https://files.catbox.moe/3192ay.jpg'
 
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
